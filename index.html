@@ -9,6 +9,7 @@
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="style.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
 <body>
     <div class="top-notice hide-on-save">
@@ -59,9 +60,17 @@
         </div>
     </nav>
     <div class="reset-btn hide-on-save" onclick="showResetModal()" title="초기화"><span class="material-icons">refresh</span></div>
+    
     <div id="reset-modal" class="modal hide-on-save">
         <div class="modal-content"><h3>초기화 하시겠습니까?</h3><p>모든 내용이 사라집니다.</p><div class="modal-btns"><button onclick="resetPage()">초기화</button><button onclick="closeResetModal()" style="background:#ddd; color:#333">취소</button></div></div>
     </div>
+
+    <div id="emoji-modal" class="modal hide-on-save" onclick="closeEmojiModal(event)">
+        <div class="modal-content emoji-content">
+            <emoji-picker class="light"></emoji-picker>
+        </div>
+    </div>
+
     <div id="cropper-modal" class="modal hide-on-save" style="z-index: 3000;">
         <div class="modal-content cropper-content">
             <h3>이미지 편집</h3>
@@ -97,9 +106,35 @@
                     <div class="color-pickers dropdown" id="p1-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p1-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p1-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
-                    <div class="sub-row"><div class="sub-img" id="p1-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub1')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
-                    <div class="sub-row"><div class="sub-img" id="p1-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub2')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
-                    <div class="sub-row"><div class="sub-img" id="p1-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub3')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row">
+                        <div class="sub-img" id="p1-sub1">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p1-sub1-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub1')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub1-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
+                    
+                    <div class="sub-row">
+                        <div class="sub-img" id="p1-sub2">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p1-sub2-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub2')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub2-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
+                    
+                    <div class="sub-row">
+                        <div class="sub-img" id="p1-sub3">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p1-sub3-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub3')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub3-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
                 </div>
                 <div class="profile-card">
                     <div class="name-row">
@@ -132,9 +167,35 @@
                      <div class="color-pickers dropdown" id="p2-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
-                    <div class="sub-row"><div class="sub-img" id="p2-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub1')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
-                    <div class="sub-row"><div class="sub-img" id="p2-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub2')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
-                    <div class="sub-row"><div class="sub-img" id="p2-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub3')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row">
+                        <div class="sub-img" id="p2-sub1">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p2-sub1-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub1')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub1-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
+                    
+                    <div class="sub-row">
+                        <div class="sub-img" id="p2-sub2">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p2-sub2-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub2')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub2-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
+                    
+                    <div class="sub-row">
+                        <div class="sub-img" id="p2-sub3">
+                            <span class="plus no-select">+</span>
+                            <div class="emoji-display" id="p2-sub3-emoji"></div>
+                            <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub3')">
+                            <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub3-emoji')">sentiment_satisfied_alt</div>
+                        </div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                    </div>
                 </div>
                 <div class="profile-card">
                     <div class="name-row">

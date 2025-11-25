@@ -7,7 +7,9 @@ function loadImage(event, id) {
         reader.onload = function(e) {
             container.style.backgroundImage = 'url(' + e.target.result + ')';
             const ph = container.querySelector('.placeholder-text, .plus, .placeholder');
+            const em = container.querySelector('.emoji-display');
             if(ph) ph.style.display = 'none';
+            if(em) em.textContent = ''; // 이모티콘 초기화
             if(id.includes('profile-bg')) container.style.backgroundColor = 'transparent';
         }
         reader.readAsDataURL(file);
@@ -199,7 +201,9 @@ function applyCrop() {
     const dataUrl = cropperCanvas.toDataURL('image/png');
     container.style.backgroundImage = 'url(' + dataUrl + ')';
     const ph = container.querySelector('.placeholder-text, .plus, .placeholder');
+    const em = container.querySelector('.emoji-display');
     if(ph) ph.style.display = 'none';
+    if(em) em.textContent = '';
     if(currentCropTargetId.includes('profile-bg')) container.style.backgroundColor = 'transparent';
     closeCropper();
 }
@@ -359,3 +363,39 @@ function toggleMinimalMode() {
         btn.querySelector('.material-icons').textContent = 'crop_portrait';
     }
 }
+
+// 이모티콘 관련 로직
+let currentEmojiTargetId = null;
+
+function openEmojiPicker(event, targetDisplayId) {
+    event.stopPropagation();
+    currentEmojiTargetId = targetDisplayId;
+    document.getElementById('emoji-modal').classList.add('show');
+}
+
+function closeEmojiModal(event) {
+    if (event.target.id === 'emoji-modal') {
+        document.getElementById('emoji-modal').classList.remove('show');
+    }
+}
+
+// 이모티콘 선택 이벤트 리스너 (DOM이 로드된 후 실행)
+document.addEventListener('DOMContentLoaded', () => {
+    const picker = document.querySelector('emoji-picker');
+    if(picker) {
+        picker.addEventListener('emoji-click', event => {
+            if(currentEmojiTargetId) {
+                const display = document.getElementById(currentEmojiTargetId);
+                if(display) {
+                    display.textContent = event.detail.unicode;
+                    // 배경 이미지나 플러스 버튼 숨기기 로직 연동
+                    const container = display.parentElement;
+                    container.style.backgroundImage = 'none';
+                    const ph = container.querySelector('.plus');
+                    if(ph) ph.style.display = 'none';
+                }
+            }
+            document.getElementById('emoji-modal').classList.remove('show');
+        });
+    }
+});
