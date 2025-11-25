@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --bg-color: #eef2f5; 
     --p1-text: #333; --p2-text: #333; 
     --sub-text-color: #888;
@@ -113,6 +113,25 @@ body {
 }
 .modal-btns button:first-child { background: #ff4d4d; color: white; }
 
+/* [추가됨] 이미지 편집기 스타일 */
+.cropper-content { width: 90%; max-width: 500px; height: auto; max-height: 90vh; display: flex; flex-direction: column; }
+.canvas-container {
+    width: 100%; height: 300px; background: #eee; margin-bottom: 15px;
+    overflow: hidden; border-radius: 10px; border: 2px dashed #ccc;
+    display: flex; justify-content: center; align-items: center; cursor: grab;
+}
+.canvas-container:active { cursor: grabbing; }
+.cropper-controls { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 20px; }
+.cropper-controls input[type=range] { width: 150px; }
+.icon-btn { background: none; color: #333; border: 1px solid #ddd; padding: 5px; border-radius: 5px; }
+
+/* [추가됨] 글씨 자동 줄이기용 스타일 */
+.auto-shrink {
+    overflow: hidden; 
+    white-space: nowrap; 
+    /* 높이 고정은 아래 구체적 요소에서 처리 */
+}
+
 /* 시트 */
 .sheet {
     background-color: var(--bg-color); background-size: cover; background-position: center;
@@ -198,9 +217,9 @@ body {
 .album-art { width: 55px; height: 55px; border-radius: 10px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; cursor: pointer; flex-shrink: 0; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center;}
 .album-art input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .music-info { flex-grow: 1; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 2px;}
-.song-title { font-weight: bold; font-size: 13px; }
-.artist-name { font-size: 11px; opacity: 0.9; }
-.lyrics { font-size: 10px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+.song-title { font-weight: bold; font-size: 13px; max-height: 20px;}
+.artist-name { font-size: 11px; opacity: 0.9; max-height: 16px;}
+.lyrics { font-size: 10px; opacity: 0.8; max-height: 16px;}
 .music-controls { display: flex; justify-content: space-between; align-items: center; font-size: 18px; opacity: 0.9; cursor: default; margin-top: 3px;}
 .heart-btn { cursor: pointer; transition: 0.2s; } .heart-btn.active { color: #ff4d4d; }
 
@@ -213,10 +232,14 @@ body {
     background: var(--component-bg); color: #333; padding: 12px 18px; border-radius: 16px; 
     font-size: 14px; box-shadow: 2px 2px 8px var(--shadow-color); 
     position: relative; line-height: 1.4; border-top-left-radius: 0;
+    /* [추가] 높이 고정 및 오버플로우 숨김 */
+    height: 44px; display: flex; align-items: center;
 }
 .sub-description { 
     background: var(--component-bg); color: inherit; 
     padding: 10px; border-radius: 8px; font-size: 12px; border: 1px solid var(--input-border); height: 100%; border-top-left-radius: 8px; 
+    /* [추가] 텍스트 넘침 방지 */
+    display: flex; align-items: center;
 }
 .bubble::after {
     content: ''; position: absolute; top: 0; left: -8px;
@@ -276,7 +299,7 @@ body {
 }
 .profile-color-trigger span { font-size: 12px; color: #333; }
 .profile-color-trigger input { pointer-events: auto; position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer;}
-.name-texts h1 { margin: 0; font-size: 20px; color: inherit; }
+.name-texts h1 { margin: 0; font-size: 20px; color: inherit; max-width: 140px;}
 .name-texts p { margin: 1px 0 0; font-size: 11px; color: var(--sub-text-color); }
 .palettes { display: flex; gap: 6px; }
 .palette-item { display: flex; flex-direction: column; align-items: center; }
@@ -325,14 +348,17 @@ body.capturing .glass-bar {
     backdrop-filter: none; 
 }
 
-/* [중요 수정] 뮤직 플레이어: 검은색 -> 흰색 반투명으로 변경 */
+/* [중요 수정] 뮤직 플레이어: 유리 효과 시뮬레이션 */
+/* 저장할 땐 블러가 안먹히므로 불투명한 흰색을 깔아줌 (미러 효과 대체) */
 body.capturing .glass-effect { 
-    background: rgba(255, 255, 255, 0.7); /* 이 부분이 0.6 Black 이어서 문제였음 */
+    background: rgba(255, 255, 255, 0.85) !important; /* 조금 더 진하게 */
     backdrop-filter: none;
-    border: 1px solid rgba(255,255,255,0.5); /* 테두리도 조금 더 선명하게 */
+    border: 1px solid rgba(255,255,255,0.6); 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-/* 다크모드일 때만 저장 시 어두운 배경 적용 */
+/* 다크모드일 때 저장용 스타일 */
 body.dark-mode.capturing .glass-effect {
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(30, 30, 30, 0.85) !important;
+    border: 1px solid rgba(255,255,255,0.1);
 }
