@@ -3,60 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>캐릭터 시트 생성기</title>
+    <title>캐릭터 시트 생성기 Ver.2</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
+
     <div class="controls">
         <button onclick="saveImage()">이미지로 저장하기 📸</button>
+        <p class="guide-text">※ 테마바의 왼쪽/오른쪽을 각각 클릭하여 그라데이션 색을 지정하세요.</p>
     </div>
+
     <div id="sheet-container" class="sheet">
-        <div class="left-column">
-            <div class="image-box main-pic" onclick="triggerUpload('file-main')">
-                <span>클릭해서<br>전신/반신 업로드</span>
-                <input type="file" id="file-main" accept="image/*" onchange="loadImage(event, 'file-main')">
+        
+        <div class="phone-ui-area">
+            <span class="material-icons close-icon">close</span>
+
+            <div class="bubble-wrapper">
+                <div class="bubble" id="speech-bubble" contenteditable="true">어쩌고 라고 합니다.</div>
+                <input type="color" id="bubble-color-picker" value="#ffffff" oninput="changeBubbleColor(this.value)" title="말풍선 색상 변경">
+            </div>
+
+            <div class="main-image-area" onclick="triggerUpload('file-main')" id="main-bg">
+                <span class="placeholder">클릭해서<br>전신/반신 업로드</span>
+                <input type="file" id="file-main" accept="image/*" onchange="loadImage(event, 'main-bg')">
+            </div>
+
+            <div class="app-icons">
+                <div class="icon-col"><span class="material-icons">chat_bubble</span><span class="icon-label">1:1채팅</span></div>
+                <div class="icon-col"><span class="material-icons">call</span><span class="icon-label">통화하기</span></div>
+                <div class="icon-col"><span class="material-icons">videocam</span><span class="icon-label">페이스톡</span></div>
             </div>
         </div>
-        <div class="right-column">
-            <div class="sub-box-container">
-                <div class="image-box sub-pic" onclick="triggerUpload('file-sub1')">
-                    <span class="placeholder-text">외적특징<br>#설명</span>
-                    <input type="file" id="file-sub1" accept="image/*" onchange="loadImage(event, 'file-sub1')">
+
+        <div class="info-area">
+            
+            <div class="copyright-text">ⓒ 이미지 출처</div>
+
+            <div class="sub-items">
+                <div class="sub-item-group">
+                    <div class="sub-img-box" onclick="triggerUpload('file-sub1')" id="sub-bg1">
+                        <input type="file" id="file-sub1" accept="image/*" onchange="loadImage(event, 'sub-bg1')">
+                    </div>
+                    <div class="sub-desc" contenteditable="true">
+                        <strong>외적특징</strong><br>#설명
+                    </div>
+                    <div class="desc-input-box" contenteditable="true">여기에 설명적을 수 있는 칸</div>
                 </div>
-                <div class="image-box sub-pic" onclick="triggerUpload('file-sub2')">
-                    <span class="placeholder-text">표정참고<br>#이모티콘 가능</span>
-                    <input type="file" id="file-sub2" accept="image/*" onchange="loadImage(event, 'file-sub2')">
+
+                <div class="sub-item-group">
+                    <div class="sub-img-box" onclick="triggerUpload('file-sub2')" id="sub-bg2">
+                        <input type="file" id="file-sub2" accept="image/*" onchange="loadImage(event, 'sub-bg2')">
+                    </div>
+                    <div class="sub-desc" contenteditable="true">
+                        <strong>표정참고</strong><br>#이모티콘 넣어도 좋을듯
+                    </div>
+                     <div class="desc-input-box" contenteditable="true">여기에 설명적을 수 있는 칸</div>
                 </div>
-                <div class="image-box sub-pic" onclick="triggerUpload('file-sub3')">
-                    <span class="placeholder-text">동물모에화<br>#설명</span>
-                    <input type="file" id="file-sub3" accept="image/*" onchange="loadImage(event, 'file-sub3')">
+
+                <div class="sub-item-group">
+                    <div class="sub-img-box" onclick="triggerUpload('file-sub3')" id="sub-bg3">
+                        <input type="file" id="file-sub3" accept="image/*" onchange="loadImage(event, 'sub-bg3')">
+                    </div>
+                    <div class="sub-desc" contenteditable="true">
+                        <strong>동물모에화</strong><br>#설명
+                    </div>
+                     <div class="desc-input-box" contenteditable="true">여기에 설명적을 수 있는 칸</div>
                 </div>
             </div>
-            <div class="palette-area">
-                <div class="color-circle" contenteditable="true" style="background:#ddd;">HAIR</div>
-                <div class="color-circle" contenteditable="true" style="background:#ddd;">EYE (L)</div>
-                <div class="color-circle" contenteditable="true" style="background:#ddd;">EYE (R)</div>
+
+            <div class="palette-container">
+                <div class="palette-item">
+                    <div class="color-circle" style="background-color: #ddd;" onclick="triggerColor('p-hair')">
+                        <input type="color" id="p-hair" oninput="changeColor(this)">
+                    </div>
+                    <span class="palette-label">HAIR</span>
+                </div>
+                <div class="palette-item">
+                    <div class="color-circle" style="background-color: #ddd;" onclick="triggerColor('p-eyel')">
+                        <input type="color" id="p-eyel" oninput="changeColor(this)">
+                    </div>
+                    <span class="palette-label">EYE (L)</span>
+                </div>
+                <div class="palette-item">
+                    <div class="color-circle" style="background-color: #ddd;" onclick="triggerColor('p-eyer')">
+                        <input type="color" id="p-eyer" oninput="changeColor(this)">
+                    </div>
+                    <span class="palette-label">EYE (R)</span>
+                </div>
             </div>
-        </div>
-        <div class="bottom-section">
-            <div class="name-box">
-                <h1 contenteditable="true">이름</h1>
-                <p contenteditable="true">영어 or 원문</p>
+
+        </div> <div class="bottom-full-width">
+            <div class="name-card">
+                <div class="name-placeholder"></div> <div class="name-text">
+                    <h2 contenteditable="true">이름</h2>
+                    <p contenteditable="true">영어 or 원문</p>
+                </div>
             </div>
-            <div class="stats-box" contenteditable="true">
-                성별 | 나이 | 키cm | 몸무게kg | 체격
+
+            <div class="stats-bar">
+                <span contenteditable="true">성별 | 나이 | 키cm | 몸무게kg | 체격 ▶</span>
             </div>
-            <div class="theme-box">
-                <span>THEME</span>
-                <div class="theme-bar" contenteditable="true">테마곡이나 분위기를 입력하세요</div>
+
+            <div class="theme-row">
+                <span class="theme-label">THEME</span>
+                <div class="gradient-bar" id="gradient-bar">
+                    <span contenteditable="true" class="theme-text">테마곡이나 분위기를 입력하세요</span>
+                    <input type="color" id="grad-start" value="#eeeeee" oninput="updateGradient()">
+                    <input type="color" id="grad-end" value="#eeeeee" oninput="updateGradient()">
+                    
+                    <div class="grad-trigger left" onclick="triggerColor('grad-start')" title="시작 색상 변경"></div>
+                    <div class="grad-trigger right" onclick="triggerColor('grad-end')" title="끝 색상 변경"></div>
+                </div>
             </div>
-            <div class="comment-box">
-                <span class="red-tag">! 참고용 납작한 밈적 캐해석</span>
-                <span contenteditable="true" class="hash-text">#예를들어극I100%음습한안경문학소녀</span>
+
+            <div class="meme-box">
+                <span class="red-alert">! 참고용 납작한 밈적 캐해석</span>
+                <div class="gray-hash-box" contenteditable="true">
+                    #예를들어극I100%음습한안경문학소녀
+                </div>
             </div>
         </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
