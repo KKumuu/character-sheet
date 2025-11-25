@@ -1,4 +1,4 @@
-﻿:root {
+:root {
     --bg-color: #eef2f5; 
     --p1-text: #333; --p2-text: #333; 
     --sub-text-color: #888;
@@ -15,17 +15,15 @@
     --phone-ui-text: white; 
 }
 
-/* [중요] 다크모드에서 색상 변수 재정의 제거 -> JS 제어권 강화 */
+/* 다크모드 설정 */
 body.dark-mode {
     --bg-color: #222; 
-    /* 텍스트 색상 변수는 JS에서만 제어합니다 (우선순위 문제 해결) */
     --sub-text-color: #aaa;
     --frame-bg: #2b2b2b; --frame-border: #444;
     --component-bg: #444; --input-bg: #555; --input-border: #666;
     --shadow-color: rgba(0,0,0,0.5);
     --accent-color: #eee;
     --sidebar-bg: #333; --sidebar-icon: #eee;
-    /* 페어명 색상도 JS 제어 */
     --glass-bg: rgba(0, 0, 0, 0.3); 
     --glass-border: rgba(255,255,255,0.05);
     --phone-ui-text: #eee; 
@@ -33,6 +31,7 @@ body.dark-mode {
 body.dark-mode .save-btn-round .material-icons { color: #333 !important; }
 body.dark-mode .stats-line { color: #eee; background: #444; border-color: #555; }
 body.dark-mode .bubble { color: #eee; } 
+body.dark-mode .meme-tag { color: #eee; }
 
 * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; outline: none; }
 .material-icons, .material-icons-outlined, img { user-select: none; -webkit-user-drag: none; }
@@ -48,7 +47,6 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .left-sidebar { left: 15px; } .right-sidebar { right: 15px; }
 .menu-item { width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--sidebar-icon); transition: 0.2s; position: relative; }
 .menu-item:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
-.menu-item .material-icons { font-size: 24px; }
 .menu-item input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; left:0; top:0; }
 .menu-item.active-link { background-color: #e0f7fa; color: #00bcd4; border: 1px solid #00bcd4; }
 .menu-item.active-link .material-icons { color: #00bcd4; }
@@ -85,11 +83,11 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 #pair-name-container { width: 600px; height: 70px; text-align: center; overflow: hidden; }
 #pair-sub-label-box span { display: block; max-width: 200px; height: 20px; overflow: hidden; white-space: nowrap; }
 
-/* [수정] 시트 메인: gap 확대 (스마트폰과 특징란 사이 간격 벌림) */
+/* 시트 메인 */
 .sheet { 
     background-color: var(--bg-color); background-size: cover; background-position: center; 
     padding: 80px 60px 40px 60px; border-radius: 20px; transition: 0.3s; 
-    display: flex; gap: 15px; /* 기존 30px -> 60px */ 
+    display: flex; gap: 15px; 
     position: relative; 
 }
 .sheet.mode-1, .sheet.mode-2 { width: auto; justify-content: center; }
@@ -134,31 +132,13 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 #p1-set .info-frame { color: var(--p1-text); }
 #p2-set .info-frame { color: var(--p2-text); }
 
-/* 말풍선: 최대 너비 제한 적용 */
 .bubble { 
-    width: fit-content;    
-    max-width: 240px;      /* 최대 너비 제한 */
-    min-width: 40px;       
-    min-height: 30px; 
-    height: auto; 
-    background: var(--component-bg); 
-    color: #333; 
-    padding: 8px 18px; 
-    border-radius: 16px; 
-    font-size: 14px; 
-    box-shadow: 2px 2px 8px var(--shadow-color); 
-    position: relative; 
-    border-top-left-radius: 0; 
-    display: flex; 
-    align-items: center; 
+    width: fit-content; max-width: 240px; min-width: 40px; min-height: 30px; height: auto; 
+    background: var(--component-bg); color: #333; padding: 8px 18px; border-radius: 16px; 
+    font-size: 14px; box-shadow: 2px 2px 8px var(--shadow-color); position: relative; 
+    border-top-left-radius: 0; display: flex; align-items: center; 
 }
-.bubble span.auto-shrink { 
-    white-space: pre-wrap; 
-    word-break: break-all; 
-    display: block; 
-    width: 100%;
-    line-height: 1.3;
-}
+.bubble span.auto-shrink { white-space: pre-wrap; word-break: break-all; display: block; width: 100%; line-height: 1.3; }
 .bubble::after { content: ''; position: absolute; top: 0; left: -8px; border-width: 0 10px 10px 0; border-style: solid; border-color: transparent var(--component-bg) transparent transparent; }
 .bubble-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 15px; position: relative;}
 .mode-2 #p1-set .bubble { border-top-left-radius: 16px; border-top-right-radius: 0; }
@@ -168,13 +148,11 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .inner-palette-btn .material-icons { font-size: 14px; color: #bbb; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
 .bubble:hover .inner-palette-btn { opacity: 1; }
 
-/* [수정] 서브리스트: 사진칸 대폭 확대 (130px) */
 .sub-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-grow: 1;}
 .sub-row { display: flex; gap: 10px; align-items: flex-start; flex-grow: 1; }
 
 .sub-img { 
-    width: 130px;  /* [수정] 90px -> 130px */
-    height: 130px; /* 정사각형 비율 유지 */
+    width: 130px; height: 130px;
     background: var(--input-bg); border-radius: 16px; position: relative; 
     display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
     background-size: cover; background-position: center; border: 1px solid var(--input-border); 
@@ -183,14 +161,7 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .sub-img input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
 .plus { font-size: 24px; color: #ccc !important; } 
 
-.sub-text-group { 
-    flex-grow: 1; 
-    display: flex; flex-direction: column; 
-    justify-content: flex-start;
-    gap: 2px;
-    height: 130px; /* 사진 높이에 맞춤 */
-    min-width: 0; 
-}
+.sub-text-group { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 2px; height: 130px; min-width: 0; }
 .sub-header-row { height: 16px; display: flex; font-size: 12px; align-items: center; overflow: hidden; width: 100%; }
 .sub-header-row strong { max-width: 80px; } 
 .sub-header-row .hash { margin-left: auto; max-width: 80px; font-size: 10px; color: var(--sub-text-color); text-align: right; }
@@ -198,17 +169,14 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .sub-description { 
     background: var(--component-bg); padding: 4px 10px; border-radius: 12px; font-size: 12px; border: 1px solid var(--input-border); 
     border-top-left-radius: 12px; overflow: hidden; display: flex; align-items: center; 
-    flex-grow: 1; 
-    height: 100%; 
-    color: var(--sub-text-color); 
+    flex-grow: 1; height: 100%; color: var(--sub-text-color); 
     box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
 }
 .sub-description.auto-shrink { white-space: normal; }
 
-/* [수정] 2인 모드: 스마트폰 간격 좁힘 */
 .profile-set { display: flex; gap: 30px; transition: all 0.5s ease; }
 .mode-1 .profile-set { flex-direction: row; }
-.mode-2 .profile-set { gap: 30px; /* 5px -> 0px 밀착 */ justify-content: center;}
+.mode-2 .profile-set { gap: 30px; justify-content: center;}
 .mode-2 #p1-set { flex-direction: row-reverse; } .mode-2 #p2-set { flex-direction: row; }
 #p2-set { opacity: 0; width: 0; overflow: hidden; transition: opacity 0.5s ease, width 0.5s ease; }
 .mode-2 #p2-set { opacity: 1; width: 610px; }
@@ -257,102 +225,20 @@ body.capturing .hide-on-save, body.capturing .selected, body.capturing .control-
 body.capturing .glass-bar { background: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.1); }
 body.capturing .glass-effect { background: rgba(255, 255, 255, 0.25) !important; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.1); backdrop-filter: none; }
 body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.05); }
-/* =========================================
-   [추가] 미니멀 모드 (Minimal Mode)
-   - 스마트폰 사진 외의 모든 이미지 영역 숨김
-   - 텍스트 영역 확장 및 높이 자동 조절
-   ========================================= */
-.sheet.minimal-mode .sub-img,
-.sheet.minimal-mode .profile-image-area {
-    display: none !important;
-}
 
-/* 서브 리스트 텍스트 영역 확장 */
-.sheet.minimal-mode .sub-text-group {
-    height: auto;           /* 고정 높이(130px) 해제 */
-    min-height: 80px;       /* 최소 높이 설정 */
-    justify-content: center;
-}
+/* 미니멀 모드 */
+.sheet.minimal-mode .sub-img, .sheet.minimal-mode .profile-image-area { display: none !important; }
+.sheet.minimal-mode .sub-text-group { height: auto; min-height: 80px; justify-content: center; }
+.sheet.minimal-mode .sub-description { border-radius: 12px; min-height: 50px; height: auto; padding: 8px 12px; }
+.sheet.minimal-mode .name-section { width: auto; flex-grow: 1; }
+.sheet.minimal-mode .name-texts { width: 100%; align-items: flex-start; }
 
-/* 설명란 스타일 다듬기 */
-.sheet.minimal-mode .sub-description {
-    border-radius: 12px;    /* 모서리 둥글게 통일 */
-    min-height: 50px;       /* 설명란 최소 높이 확보 */
-    height: auto;
-    padding: 8px 12px;
-}
+/* 상단 안내 문구 */
+.top-notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 13px; z-index: 500; pointer-events: none; line-height: 1.5; width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.top-notice p { margin: 0; }
 
-/* 프로필 카드 이름 영역 확장 */
-.sheet.minimal-mode .name-section {
-    width: auto;            /* 고정 너비 해제 */
-    flex-grow: 1;
-}
-
-.sheet.minimal-mode .name-texts {
-    width: 100%;
-    align-items: flex-start; /* 왼쪽 정렬 */
-}
-
-/* 상단 안내 문구 스타일 */
-.top-notice {
-    position: fixed;        /* 화면 상단에 고정 */
-    top: 20px;              /* 위에서부터의 간격 */
-    left: 50%;
-    transform: translateX(-50%); /* 정확히 중앙 정렬 */
-    text-align: center;
-    color: rgba(255, 255, 255, 0.6); /* 은은한 흰색 */
-    font-size: 13px;
-    z-index: 500;           /* 다른 요소 위에 표시 */
-    pointer-events: none;   /* 마우스 클릭 통과 (뒤에 있는 요소 클릭 방해 안 함) */
-    line-height: 1.5;       /* 줄 간격 */
-    width: 100%;            /* 너비 확보 */
-    text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* 글씨 잘 보이게 그림자 */
-}
-
-/* 안내 문구 단락 간격 제거 */
-.top-notice p {
-    margin: 0;
-}
-
-/* [추가] 밈적 캐해석(납작한 해석) 라인 스타일 */
-.meme-line {
-    margin-top: 8px; /* 테마 바와의 간격 */
-    width: 100%;
-    height: 30px;
-    background: var(--component-bg);
-    border: 1px solid var(--input-border);
-    border-radius: 50px; /* 둥근 캡슐 모양 */
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    gap: 6px;
-    font-size: 11px;
-    box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
-}
-
-.meme-icon {
-    color: #ff4d4d; /* 빨간색 느낌표 */
-    font-weight: 900;
-    font-size: 14px;
-    flex-shrink: 0;
-}
-
-.meme-desc {
-    color: #bbb; /* 회색 설명 텍스트 */
-    flex-grow: 1;
-    white-space: nowrap;
-    overflow: hidden;
-    min-width: 50px;
-}
-
-.meme-tag {
-    color: #333; /* 검은색 해시태그 */
-    font-weight: bold;
-    text-align: right;
-    max-width: 60%;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-/* 다크모드 대응 */
-body.dark-mode .meme-tag { color: #eee; }
+/* 밈적 캐해석 라인 */
+.meme-line { margin-top: 0; width: 100%; height: 30px; background: var(--component-bg); border: 1px solid var(--input-border); border-radius: 50px; display: flex; align-items: center; padding: 0 10px; gap: 6px; font-size: 11px; box-shadow: 1px 1px 3px rgba(0,0,0,0.03); }
+.meme-icon { color: #ff4d4d; font-weight: 900; font-size: 14px; flex-shrink: 0; }
+.meme-desc { color: #bbb; flex-grow: 1; white-space: nowrap; overflow: hidden; min-width: 50px; }
+.meme-tag { color: #333; font-weight: bold; text-align: right; max-width: 60%; white-space: nowrap; overflow: hidden; }
