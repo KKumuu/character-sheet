@@ -3,17 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>캐릭터 시트 생성기 Ver.16 (Editor & AutoText)</title>
+    <title>Character Sheet Final Polish v3</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
     <link rel="stylesheet" href="style.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
-
     <nav class="sidebar left-sidebar hide-on-save">
         <div class="menu-group">
             <div class="menu-item" data-title="1인 모드" onclick="setMode(1)"><span class="material-icons">person</span></div>
@@ -21,333 +18,125 @@
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-            <div class="menu-item" data-title="전체 배경 색상">
-                <span class="material-icons">format_paint</span>
-                <input type="color" value="#eef2f5" oninput="changeSheetColor(this.value)">
-            </div>
-            <div class="menu-item" data-title="배경 사진 넣기">
-                <label for="bg-file-upload"><span class="material-icons">image</span></label>
-                <input type="file" id="bg-file-upload" accept="image/*" onchange="loadBackgroundImage(event)">
-            </div>
-             <div class="menu-item" data-title="스티커 추가">
-                <label for="sticker-upload"><span class="material-icons">star</span></label>
-                <input type="file" id="sticker-upload" accept="image/*" onchange="addSticker(event)">
-            </div>
+            <div class="menu-item" data-title="전체 배경 색상"><span class="material-icons">format_paint</span><input type="color" value="#eef2f5" oninput="changeSheetColor(this.value)"></div>
+            <div class="menu-item" data-title="배경 사진 넣기"><label for="bg-file-upload"><span class="material-icons">image</span></label><input type="file" id="bg-file-upload" accept="image/*" onchange="loadBackgroundImage(event)"></div>
+             <div class="menu-item" data-title="스티커 추가"><label for="sticker-upload"><span class="material-icons">star</span></label><input type="file" id="sticker-upload" accept="image/*" onchange="addSticker(event)"></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-            <div class="menu-item" data-title="P1 테두리 색상">
-                <span class="material-icons">smartphone</span>
-                <input type="color" value="#ffffff" oninput="changeBorderColor(this.value, 'p1-frame')">
-            </div>
-            <div class="menu-item" data-title="P1 글씨 색상">
-                <span class="material-icons">text_fields</span>
-                <input type="color" value="#333333" oninput="changeP1TextColor(this.value)">
-            </div>
-            <div class="menu-item" data-title="플레이어 ON/OFF" onclick="toggleMusicPlayer()">
-                <span class="material-icons">music_note</span>
-            </div>
-            <div class="menu-item" data-title="P1 플레이어 배경">
-                <span class="material-icons">palette</span>
-                <input type="color" value="#ffffff" oninput="changeMusicBg(this.value, 'p1-music')">
-            </div>
-            <div class="menu-item" data-title="P1 플레이어 글씨">
-                <span class="material-icons">title</span>
-                <input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p1-music')">
-            </div>
+            <div class="menu-item" data-title="P1-P2 색상 연동" onclick="toggleColorLink(this)"><span class="material-icons">link</span></div>
+            <div class="menu-item" data-title="P1 테두리 색상"><span class="material-icons">smartphone</span><input type="color" value="#ffffff" oninput="changeP1BorderColor(this.value)"></div>
+            <div class="menu-item" data-title="P1 글씨 색상"><span class="material-icons">text_fields</span><input type="color" value="#333333" oninput="changeP1TextColor(this.value)"></div>
+            <div class="menu-item" data-title="플레이어 ON/OFF" onclick="toggleMusicPlayer()"><span class="material-icons">music_note</span></div>
+            <div class="menu-item" data-title="P1 플레이어 배경"><span class="material-icons">palette</span><input type="color" value="#ffffff" oninput="changeMusicBg(this.value, 'p1-music')"></div>
+            <div class="menu-item" data-title="P1 플레이어 글씨"><span class="material-icons">title</span><input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p1-music')"></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-             <div class="menu-item" data-title="다크 모드" onclick="toggleDarkMode()">
-                <span class="material-icons">dark_mode</span>
-            </div>
-            <button onclick="saveImage()" class="save-btn-round" data-title="이미지 저장">
-                <span class="material-icons" style="color:white">save_alt</span>
-            </button>
+             <div class="menu-item" data-title="다크 모드" onclick="toggleDarkMode()"><span class="material-icons">dark_mode</span></div>
+            <button onclick="saveImage()" class="save-btn-round" data-title="이미지 저장"><span class="material-icons" style="color:white">save_alt</span></button>
         </div>
     </nav>
-
     <nav class="sidebar right-sidebar hide-on-save" id="p2-sidebar" style="display:none;">
         <div class="menu-group">
-            <div class="menu-item" data-title="P2 테두리 색상">
-                <span class="material-icons">smartphone</span>
-                <input type="color" value="#ffffff" oninput="changeBorderColor(this.value, 'p2-frame')">
-            </div>
-            <div class="menu-item" data-title="P2 글씨 색상">
-                <span class="material-icons">text_fields</span>
-                <input type="color" value="#333333" oninput="changeP2TextColor(this.value)">
-            </div>
+            <div class="menu-item" data-title="P2 테두리 색상"><span class="material-icons">smartphone</span><input type="color" value="#ffffff" oninput="changeBorderColor(this.value, 'p2-frame')"></div>
+            <div class="menu-item" data-title="P2 글씨 색상"><span class="material-icons">text_fields</span><input type="color" value="#333333" oninput="changeP2TextColor(this.value)"></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-            <div class="menu-item" data-title="페어명 폰트 변경" onclick="cyclePairFont()">
-                <span class="material-icons">font_download</span>
-            </div>
-            <div class="menu-item" data-title="페어명 색상">
-                <span class="material-icons">palette</span>
-                <input type="color" value="#333333" oninput="changePairColor(this.value)">
-            </div>
+            <div class="menu-item" data-title="페어명 폰트 변경" onclick="cyclePairFont()"><span class="material-icons">font_download</span></div>
+            <div class="menu-item" data-title="페어명 색상"><span class="material-icons">palette</span><input type="color" value="#333333" oninput="changePairColor(this.value)"></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-            <div class="menu-item" data-title="P2 플레이어 배경">
-                <span class="material-icons">palette</span>
-                <input type="color" value="#ffffff" oninput="changeMusicBg(this.value, 'p2-music')">
-            </div>
-            <div class="menu-item" data-title="P2 플레이어 글씨">
-                <span class="material-icons">title</span>
-                <input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p2-music')">
-            </div>
+            <div class="menu-item" data-title="P2 플레이어 배경"><span class="material-icons">palette</span><input type="color" value="#ffffff" oninput="changeMusicBg(this.value, 'p2-music')"></div>
+            <div class="menu-item" data-title="P2 플레이어 글씨"><span class="material-icons">title</span><input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p2-music')"></div>
         </div>
     </nav>
-
-    <div class="reset-btn hide-on-save" onclick="showResetModal()" title="초기화">
-        <span class="material-icons">refresh</span>
-    </div>
-
+    <div class="reset-btn hide-on-save" onclick="showResetModal()" title="초기화"><span class="material-icons">refresh</span></div>
     <div id="reset-modal" class="modal hide-on-save">
-        <div class="modal-content">
-            <h3>초기화 하시겠습니까?</h3>
-            <p>작성한 내용과 이미지가 모두 사라집니다.</p>
-            <div class="modal-btns">
-                <button onclick="resetPage()">초기화</button> 
-                <button onclick="closeResetModal()" style="background:#ddd; color:#333">취소</button>
-            </div>
-        </div>
+        <div class="modal-content"><h3>초기화 하시겠습니까?</h3><p>모든 내용이 사라집니다.</p><div class="modal-btns"><button onclick="resetPage()">초기화</button><button onclick="closeResetModal()" style="background:#ddd; color:#333">취소</button></div></div>
     </div>
-
     <div id="cropper-modal" class="modal hide-on-save" style="z-index: 3000;">
         <div class="modal-content cropper-content">
             <h3>이미지 편집</h3>
-            <div class="canvas-container">
-                <canvas id="cropper-canvas"></canvas>
-            </div>
-            <div class="cropper-controls">
-                <span class="material-icons small">zoom_in</span>
-                <input type="range" id="crop-zoom" min="0.1" max="3" step="0.1" value="1">
-                <button class="icon-btn" onclick="rotateImage(90)"><span class="material-icons">rotate_right</span></button>
-            </div>
-            <div class="modal-btns">
-                <button onclick="applyCrop()">적용</button>
-                <button onclick="closeCropper()" style="background:#ddd; color:#333">취소</button>
-            </div>
+            <p style="font-size:12px; color:#666; margin-bottom:10px;">하늘색 테두리 안쪽만 저장됩니다.</p>
+            <div class="canvas-container"><canvas id="cropper-canvas"></canvas></div>
+            <div class="cropper-controls"><span class="material-icons small">zoom_in</span><input type="range" id="crop-zoom" min="0.1" max="3" step="0.1" value="1"><button class="icon-btn" onclick="rotateImage(90)"><span class="material-icons">rotate_right</span></button></div>
+            <div class="modal-btns"><button onclick="applyCrop()">적용</button><button onclick="closeCropper()" style="background:#ddd; color:#333">취소</button></div>
         </div>
     </div>
-
     <div id="sheet-container" class="sheet mode-1">
-        
         <div id="sticker-layer"></div>
-        <div class="copyright-fixed sub-text-target" contenteditable="true" data-default="ⓒ 이미지 출처">ⓒ 이미지 출처</div>
+        <div class="copyright-fixed auto-shrink" contenteditable="true" data-default="ⓒ 이미지 출처" oninput="autoFitText(this)">ⓒ 이미지 출처</div>
+        <div class="other-info-fixed auto-shrink" contenteditable="true" data-default="색상 보정에 크게 신경쓰지 않습니다." oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
         
         <div id="pair-name-wrapper" style="display:none;">
-            <div id="pair-name-container" class="pair-name font-style-1" contenteditable="true" data-default="Pair Name">Pair Name</div>
-            <div class="pair-controls hide-on-save">
-                <span class="material-icons" onclick="changePairSize(2)">add</span>
-                <span class="material-icons" onclick="changePairSize(-2)">remove</span>
-                <span class="material-icons" onclick="changePairPos(-5)">arrow_upward</span>
-                <span class="material-icons" onclick="changePairPos(5)">arrow_downward</span>
-                <span class="material-icons" onclick="togglePairSubLabel()">subtitles</span>
-            </div>
-             <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;" contenteditable="true">
-                Sub Text
-                <div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div>
-            </div>
+            <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;"><span class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">Sub Text</span><div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div></div>
+            <div id="pair-name-container" class="pair-name font-style-1 auto-shrink" contenteditable="true" data-default="Pair Name" oninput="autoFitText(this)">Pair Name</div>
+            <div class="pair-controls hide-on-save"><span class="material-icons" onclick="changePairSize(2)">add</span><span class="material-icons" onclick="changePairSize(-2)">remove</span><span class="material-icons" onclick="changePairPos(-5)">arrow_upward</span><span class="material-icons" onclick="changePairPos(5)">arrow_downward</span><span class="material-icons" onclick="togglePairSubLabel()">subtitles</span></div>
         </div>
-
         <div class="profile-set" id="p1-set">
             <div class="phone-frame" id="p1-frame">
-                <div class="main-pic-area" id="p1-main-bg">
-                    <div class="placeholder-text no-select"><span class="material-icons-outlined">add_photo_alternate</span><br>Upload</div>
-                    <input type="file" accept="image/*" onchange="openCropper(event, 'p1-main-bg')">
-                </div>
-
-                <div class="status-bar glass-bar no-select">
-                    <span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span>
-                </div>
-
+                <div class="main-pic-area" id="p1-main-bg"><div class="placeholder-text no-select"><span class="material-icons-outlined">add_photo_alternate</span><br>Upload</div><input type="file" accept="image/*" onchange="openCropper(event, 'p1-main-bg')"></div>
+                <div class="status-bar glass-bar no-select"><span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span></div>
                 <div class="music-player glass-effect music-box" id="p1-music">
-                    <div class="album-art" id="p1-album-bg">
-                        <span class="material-icons-outlined placeholder no-select">album</span>
-                        <input type="file" accept="image/*" onchange="openCropper(event, 'p1-album-bg')">
-                    </div>
-                    <div class="music-info">
-                        <div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div>
-                        <div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div>
-                        <div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div>
-                        <div class="music-controls no-select">
-                            <span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span>
-                        </div>
-                    </div>
+                    <div class="album-art" id="p1-album-bg"><span class="material-icons-outlined placeholder no-select">album</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-album-bg')"></div>
+                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
                 </div>
-
-                <div class="dock-bar glass-bar no-select">
-                    <div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div>
-                    <div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div>
-                    <div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div>
-                </div>
+                <div class="dock-bar glass-bar no-select"><div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div><div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div><div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div></div>
             </div>
-
             <div class="info-frame">
                 <div class="bubble-row">
-                    <div class="bubble auto-shrink" id="p1-bubble" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">
-                        한마디를 입력하세요.
-                        <div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p1-bubble-menu', event)">
-                            <span class="material-icons">palette</span>
-                        </div>
-                    </div>
-                    <div class="color-pickers dropdown" id="p1-bubble-menu">
-                        <div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p1-bubble')"></div>
-                        <div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p1-bubble')"></div>
-                    </div>
+                    <div class="bubble" id="p1-bubble"><span class="auto-shrink" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p1-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
+                    <div class="color-pickers dropdown" id="p1-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p1-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p1-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
-                    <div class="sub-row">
-                        <div class="sub-img" id="p1-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub1')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">외적특징</strong><span class="hash" contenteditable="true">#설명</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
-                    <div class="sub-row">
-                        <div class="sub-img" id="p1-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub2')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">표정참고</strong><span class="hash" contenteditable="true">#이모티콘</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
-                    <div class="sub-row">
-                        <div class="sub-img" id="p1-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub3')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">동물모에화</strong><span class="hash" contenteditable="true">#동물</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
+                    <div class="sub-row"><div class="sub-img" id="p1-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub1')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row"><div class="sub-img" id="p1-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub2')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row"><div class="sub-img" id="p1-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub3')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
                 </div>
                 <div class="profile-card">
                     <div class="name-row">
-                        <div class="name-section">
-                            <div class="profile-image-area" id="p1-profile-bg">
-                                <input type="file" accept="image/*" onchange="openCropper(event, 'p1-profile-bg')">
-                                <div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div>
-                            </div>
-                            <div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div>
-                        </div>
-                        <div class="palettes no-select">
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div>
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div>
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div>
-                        </div>
+                        <div class="name-section"><div class="profile-image-area" id="p1-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p1-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div></div>
+                        <div class="palettes no-select"><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div></div>
                     </div>
-                    <div class="stats-line" contenteditable="true">성별 | 나이 | 키cm | 몸무게kg</div>
-                    <div class="theme-section">
-                        <span class="theme-label no-select">THEME</span>
-                        <div class="theme-bar" id="p1-grad-bar">
-                            <div class="click-zone left" onclick="triggerColor('p1-gs')"></div><div class="click-zone right" onclick="triggerColor('p1-ge')"></div>
-                            <input type="color" id="p1-gs" value="#eeeeee" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')">
-                            <input type="color" id="p1-ge" value="#eeeeee" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')">
-                        </div>
-                    </div>
+                    <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
+                    <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p1-grad-bar"><div class="click-zone left" onclick="triggerColor('p1-gs')"></div><div class="click-zone right" onclick="triggerColor('p1-ge')"></div><input type="color" id="p1-gs" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"><input type="color" id="p1-ge" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"></div></div>
                 </div>
             </div>
         </div> 
-
         <div class="profile-set" id="p2-set" style="display: none;">
             <div class="phone-frame" id="p2-frame">
-                <div class="main-pic-area" id="p2-main-bg">
-                    <div class="placeholder-text no-select"><span class="material-icons-outlined">add_photo_alternate</span><br>Upload</div>
-                    <input type="file" accept="image/*" onchange="openCropper(event, 'p2-main-bg')">
-                </div>
-                
-                <div class="status-bar glass-bar no-select">
-                    <span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span>
-                </div>
-
+                <div class="main-pic-area" id="p2-main-bg"><div class="placeholder-text no-select"><span class="material-icons-outlined">add_photo_alternate</span><br>Upload</div><input type="file" accept="image/*" onchange="openCropper(event, 'p2-main-bg')"></div>
+                <div class="status-bar glass-bar no-select"><span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span></div>
                 <div class="music-player glass-effect music-box" id="p2-music">
-                    <div class="album-art" id="p2-album-bg">
-                        <span class="material-icons-outlined placeholder no-select">album</span>
-                        <input type="file" accept="image/*" onchange="openCropper(event, 'p2-album-bg')">
-                    </div>
-                    <div class="music-info">
-                        <div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div>
-                        <div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div>
-                        <div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div>
-                        <div class="music-controls no-select">
-                            <span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span>
-                        </div>
-                    </div>
+                    <div class="album-art" id="p2-album-bg"><span class="material-icons-outlined placeholder no-select">album</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-album-bg')"></div>
+                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
                 </div>
-                <div class="dock-bar glass-bar no-select">
-                    <div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div>
-                    <div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div>
-                    <div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div>
-                </div>
+                <div class="dock-bar glass-bar no-select"><div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div><div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div><div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div></div>
             </div>
-
             <div class="info-frame">
                 <div class="bubble-row">
-                    <div class="bubble auto-shrink" id="p2-bubble" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">
-                        한마디를 입력하세요.
-                        <div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p2-bubble-menu', event)"><span class="material-icons">palette</span></div>
-                    </div>
-                     <div class="color-pickers dropdown" id="p2-bubble-menu">
-                        <div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div>
-                        <div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div>
-                    </div>
+                    <div class="bubble" id="p2-bubble"><span class="auto-shrink" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p2-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
+                     <div class="color-pickers dropdown" id="p2-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div></div>
                 </div>
-
                 <div class="sub-list">
-                    <div class="sub-row">
-                        <div class="sub-img" id="p2-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub1')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">외적특징</strong><span class="hash" contenteditable="true">#설명</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
-                    <div class="sub-row">
-                        <div class="sub-img" id="p2-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub2')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">표정참고</strong><span class="hash" contenteditable="true">#이모티콘</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
-                    <div class="sub-row">
-                        <div class="sub-img" id="p2-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub3')"></div>
-                        <div class="sub-text-group">
-                            <div class="sub-header-row"><strong contenteditable="true">동물모에화</strong><span class="hash" contenteditable="true">#동물</span></div>
-                            <div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div>
-                        </div>
-                    </div>
+                    <div class="sub-row"><div class="sub-img" id="p2-sub1"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub1')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row"><div class="sub-img" id="p2-sub2"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub2')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
+                    <div class="sub-row"><div class="sub-img" id="p2-sub3"><span class="plus no-select">+</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub3')"></div><div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div></div>
                 </div>
-
                 <div class="profile-card">
                     <div class="name-row">
-                        <div class="name-section">
-                            <div class="profile-image-area" id="p2-profile-bg">
-                                <input type="file" accept="image/*" onchange="openCropper(event, 'p2-profile-bg')">
-                                <div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div>
-                            </div>
-                            <div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div>
-                        </div>
-                        <div class="palettes no-select">
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div>
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div>
-                            <div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div>
-                        </div>
+                        <div class="name-section"><div class="profile-image-area" id="p2-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p2-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div></div>
+                        <div class="palettes no-select"><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div></div>
                     </div>
-                    <div class="stats-line" contenteditable="true">성별 | 나이 | 키cm | 몸무게kg</div>
-                    <div class="theme-section">
-                        <span class="theme-label no-select">THEME</span>
-                        <div class="theme-bar" id="p2-grad-bar">
-                            <div class="click-zone left" onclick="triggerColor('p2-gs')"></div><div class="click-zone right" onclick="triggerColor('p2-ge')"></div>
-                            <input type="color" id="p2-gs" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')">
-                            <input type="color" id="p2-ge" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')">
-                        </div>
-                    </div>
+                    <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
+                    <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p2-grad-bar"><div class="click-zone left" onclick="triggerColor('p2-gs')"></div><div class="click-zone right" onclick="triggerColor('p2-ge')"></div><input type="color" id="p2-gs" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"><input type="color" id="p2-ge" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"></div></div>
                 </div>
             </div>
         </div>
     </div>
-
     <script src="script.js"></script>
 </body>
 </html>
