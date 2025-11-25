@@ -1,4 +1,4 @@
-function triggerUpload(id) { document.getElementById(id).click(); }
+﻿function triggerUpload(id) { document.getElementById(id).click(); }
 function loadImage(event, id) {
     const container = document.getElementById(id);
     const file = event.target.files[0];
@@ -48,7 +48,6 @@ function setMode(mode) {
     }
 }
 
-// 커스텀 색상 여부
 let isManualColor = {
     pair: false,
     p1Text: false,
@@ -63,7 +62,6 @@ function toggleColorLink(btn) {
     btn.classList.toggle('active-link');
 }
 
-// [수정] 다크모드: 커스텀 색상 완벽 보호 로직
 function toggleDarkMode() { 
     document.body.classList.toggle('dark-mode'); 
     const isDark = document.body.classList.contains('dark-mode');
@@ -78,10 +76,8 @@ function toggleDarkMode() {
         if(id.includes('p2')) updateGradient('p2-gs', 'p2-ge', 'p2-grad-bar');
     });
 
-    // 기본값
     const defaultLight = '#333333'; const defaultDark = '#eeeeee';
 
-    // 사용자가 색을 바꾼 적이 없다면 기본 테마 색상 적용
     if (!isManualColor.pair) {
         document.documentElement.style.setProperty('--pair-name-color', isDark ? defaultDark : defaultLight);
     }
@@ -222,7 +218,7 @@ function cyclePairFont() {
 
 function changePairColor(color) { 
     document.documentElement.style.setProperty('--pair-name-color', color); 
-    isManualColor.pair = true; // 수동 변경 체크
+    isManualColor.pair = true; 
 }
 
 function changePairSize(delta) { 
@@ -349,20 +345,17 @@ function saveImage() {
     }).catch(err => { body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = ''; }); alert('저장 실패: ' + err); });
 }
 
-// [추가] 미니멀 모드 토글 함수
 function toggleMinimalMode() {
     const sheet = document.getElementById('sheet-container');
     const btn = document.getElementById('btn-minimal');
     
-    // 클래스 토글 (ON/OFF)
     sheet.classList.toggle('minimal-mode');
     
-    // 버튼 활성화 스타일 표시 (선택 사항)
     if (sheet.classList.contains('minimal-mode')) {
         btn.classList.add('active-link');
-        btn.querySelector('.material-icons').textContent = 'crop_square'; // 아이콘 변경 (꽉 찬 네모)
+        btn.querySelector('.material-icons').textContent = 'crop_square';
     } else {
         btn.classList.remove('active-link');
-        btn.querySelector('.material-icons').textContent = 'crop_portrait'; // 아이콘 복구
+        btn.querySelector('.material-icons').textContent = 'crop_portrait';
     }
 }

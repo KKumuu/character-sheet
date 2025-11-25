@@ -1,4 +1,4 @@
-:root {
+﻿:root {
     --bg-color: #eef2f5; 
     --p1-text: #333; --p2-text: #333; 
     --sub-text-color: #888;
@@ -15,7 +15,6 @@
     --phone-ui-text: white; 
 }
 
-/* 다크모드 설정 */
 body.dark-mode {
     --bg-color: #222; 
     --sub-text-color: #aaa;
@@ -42,7 +41,6 @@ body.dark-mode .meme-tag { color: #eee; }
 body { background-color: #333; margin: 0; padding: 20px; display: flex; min-height: 100vh; justify-content: center; align-items: center; }
 .no-select { user-select: none; cursor: default; }
 
-/* 사이드바 */
 .sidebar { position: fixed; top: 50%; transform: translateY(-50%); background: var(--sidebar-bg); border-radius: 12px; padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; }
 .left-sidebar { left: 15px; } .right-sidebar { right: 15px; }
 .menu-item { width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--sidebar-icon); transition: 0.2s; position: relative; }
@@ -83,7 +81,6 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 #pair-name-container { width: 600px; height: 70px; text-align: center; overflow: hidden; }
 #pair-sub-label-box span { display: block; max-width: 200px; height: 20px; overflow: hidden; white-space: nowrap; }
 
-/* 시트 메인 */
 .sheet { 
     background-color: var(--bg-color); background-size: cover; background-position: center; 
     padding: 80px 60px 40px 60px; border-radius: 20px; transition: 0.3s; 
@@ -104,7 +101,7 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .copyright-fixed { position: absolute; top: 30px; right: 40px; font-size: 10px; color: var(--sub-text-color); z-index: 10; max-width: 200px; text-align: right; overflow: hidden; white-space: nowrap; }
 .other-info-fixed { position: absolute; top: 30px; left: 40px; font-size: 10px; color: var(--sub-text-color); z-index: 10; max-width: 200px; text-align: left; overflow: hidden; white-space: nowrap; }
 
-.phone-frame { background-color: var(--frame-bg); border-radius: 30px; width: 290px; height: 620px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; border: 8px solid var(--frame-border); box-shadow: 5px 8px 25px rgba(0,0,0,0.1); z-index: 10; }
+.phone-frame { background-color: var(--frame-bg); border-radius: 30px; width: 290px; height: 680px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; border: 8px solid var(--frame-border); box-shadow: 5px 8px 25px rgba(0,0,0,0.1); z-index: 10; }
 #p1-set .phone-frame { color: var(--p1-text); }
 #p2-set .phone-frame { color: var(--p2-text); }
 .main-pic-area { flex-grow: 1; background: #e0e0e0; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; background-repeat: no-repeat; }
@@ -128,7 +125,7 @@ body { background-color: #333; margin: 0; padding: 20px; display: flex; min-heig
 .music-controls { display: flex; justify-content: space-between; align-items: center; font-size: 18px; opacity: 0.9; cursor: default; margin-top: 3px;}
 .heart-btn.active { color: #ff4d4d; }
 
-.info-frame { display: flex; flex-direction: column; width: 290px; padding-top: 0; height: 620px; }
+.info-frame { display: flex; flex-direction: column; width: 290px; padding-top: 0; height: 680px; }
 #p1-set .info-frame { color: var(--p1-text); }
 #p2-set .info-frame { color: var(--p2-text); }
 
@@ -226,23 +223,19 @@ body.capturing .glass-bar { background: rgba(255, 255, 255, 0.4); border-color: 
 body.capturing .glass-effect { background: rgba(255, 255, 255, 0.25) !important; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.1); backdrop-filter: none; }
 body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.05); }
 
-/* 미니멀 모드 */
 .sheet.minimal-mode .sub-img, .sheet.minimal-mode .profile-image-area { display: none !important; }
 .sheet.minimal-mode .sub-text-group { height: auto; min-height: 80px; justify-content: center; }
 .sheet.minimal-mode .sub-description { border-radius: 12px; min-height: 50px; height: auto; padding: 8px 12px; }
 .sheet.minimal-mode .name-section { width: auto; flex-grow: 1; }
 .sheet.minimal-mode .name-texts { width: 100%; align-items: flex-start; }
 
-/* 상단 안내 문구 */
 .top-notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 13px; z-index: 500; pointer-events: none; line-height: 1.5; width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 .top-notice p { margin: 0; }
-/* [수정 v3] 밈적 캐해석 라인 (잘림 방지 및 안전 여백 확보) */
+
 .meme-line {
-    /* 너비를 100%가 아닌 96%로 설정하여 양옆 잘림 방지 */
-    width: 96%;
-    /* 위쪽 간격 5px(적당히 붙임), 좌우는 자동(중앙 정렬) */
-    margin: 5px auto 0 auto; 
-    
+    width: 90%;
+    max-width: 260px;
+    margin: 10px auto 0 auto; 
     height: 30px;
     background: var(--component-bg);
     border: 1px solid var(--input-border);
@@ -251,7 +244,7 @@ body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !importa
     align-items: center;
     padding: 0 10px;
     gap: 8px;
-    box-sizing: border-box; /* 테두리 포함 크기 계산 */
+    box-sizing: border-box;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
     overflow: hidden; 
 }
@@ -269,8 +262,6 @@ body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !importa
     white-space: nowrap;
     overflow: hidden; 
     text-overflow: ellipsis;
-    
-    /* 유동적 너비 */
     flex-grow: 1;
     flex-shrink: 1; 
     min-width: 0; 
@@ -284,12 +275,9 @@ body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !importa
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
-    /* 태그 너비 제한 */
     max-width: 45%; 
     flex-shrink: 0; 
     min-width: 0; 
 }
 
-/* 다크모드 대응 */
 body.dark-mode .meme-tag { color: #eee; }
