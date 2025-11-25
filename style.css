@@ -236,9 +236,11 @@ body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !importa
 /* 상단 안내 문구 */
 .top-notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 13px; z-index: 500; pointer-events: none; line-height: 1.5; width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
 .top-notice p { margin: 0; }
-/* [수정] 밈적 캐해석 라인 스타일 (줄바꿈 방지 및 말줄임표(...) 처리 강화) */
+/* [수정 v2] 밈적 캐해석 라인 (박스 깨짐 방지 강력 모드) */
 .meme-line {
-    width: 100%;
+    width: 100%;             /* 부모 너비에 맞춤 */
+    max-width: 100%;         /* 절대로 부모를 넘지 않음 */
+    box-sizing: border-box;  /* 테두리, 패딩 포함해서 크기 계산 */
     height: 30px;
     background: var(--component-bg);
     border: 1px solid var(--input-border);
@@ -246,39 +248,45 @@ body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !importa
     display: flex;
     align-items: center;
     padding: 0 10px;
-    gap: 6px;
-    font-size: 11px;
+    gap: 8px;               /* 아이콘, 설명, 태그 사이 간격 */
+    margin-top: 0;
     box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
-    overflow: hidden; /* 튀어나오는 부분 자르기 */
-    max-width: 100%;  /* 부모 너비 넘지 않게 */
+    overflow: hidden;       /* 튀어나가는 건 무조건 자름 */
 }
 
 .meme-icon {
     color: #ff4d4d;
     font-weight: 900;
     font-size: 14px;
-    flex-shrink: 0; /* 아이콘은 절대 찌그러지지 않음 */
+    flex-shrink: 0;         /* 아이콘 크기 고정 */
 }
 
 .meme-desc {
     color: #bbb;
-    flex-grow: 1;          /* 남는 공간 차지 */
-    flex-shrink: 1;        /* 공간 부족하면 줄어듦 */
-    white-space: nowrap;   /* 줄바꿈 금지 */
-    overflow: hidden;      /* 넘치면 숨김 */
-    text-overflow: ellipsis; /* 넘치면 ... 표시 */
-    min-width: 0;          /* [중요] 플렉스 박스 안에서 말줄임표 작동하게 함 */
+    font-size: 11px;
+    white-space: nowrap;      /* 줄바꿈 금지 */
+    overflow: hidden;         /* 넘치면 숨김 */
+    text-overflow: ellipsis;  /* ... 처리 */
+    
+    /* [중요] 유동적 너비 설정 */
+    flex-grow: 1;             /* 남는 공간을 차지함 */
+    flex-shrink: 1;           /* 공간 부족하면 줄어듦 */
+    min-width: 0;             /* 플렉스 박스 안에서 줄어들 수 있게 허용 */
 }
 
 .meme-tag {
     color: #333;
     font-weight: bold;
+    font-size: 11px;
     text-align: right;
-    max-width: 50%;        /* 해시태그는 전체의 절반까지만 차지 */
-    flex-shrink: 0;        /* 웬만하면 줄어들지 않음 (중요해서) */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    
+    /* [중요] 태그 너비 제한 */
+    max-width: 45%;           /* 전체의 45% 이상 차지하지 못하게 함 */
+    flex-shrink: 0;           /* 웬만하면 줄어들지 않음 */
+    min-width: 0;             /* 하지만 정말 좁으면 줄어듦 */
 }
 
 /* 다크모드 대응 */
