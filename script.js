@@ -1,4 +1,4 @@
-﻿function triggerUpload(id) { document.getElementById(id).click(); }
+function triggerUpload(id) { document.getElementById(id).click(); }
 function loadImage(event, id) {
     const container = document.getElementById(id);
     const file = event.target.files[0];
