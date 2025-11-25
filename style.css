@@ -257,3 +257,102 @@ body.capturing .hide-on-save, body.capturing .selected, body.capturing .control-
 body.capturing .glass-bar { background: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.1); }
 body.capturing .glass-effect { background: rgba(255, 255, 255, 0.25) !important; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.1); backdrop-filter: none; }
 body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.05); }
+/* =========================================
+   [추가] 미니멀 모드 (Minimal Mode)
+   - 스마트폰 사진 외의 모든 이미지 영역 숨김
+   - 텍스트 영역 확장 및 높이 자동 조절
+   ========================================= */
+.sheet.minimal-mode .sub-img,
+.sheet.minimal-mode .profile-image-area {
+    display: none !important;
+}
+
+/* 서브 리스트 텍스트 영역 확장 */
+.sheet.minimal-mode .sub-text-group {
+    height: auto;           /* 고정 높이(130px) 해제 */
+    min-height: 80px;       /* 최소 높이 설정 */
+    justify-content: center;
+}
+
+/* 설명란 스타일 다듬기 */
+.sheet.minimal-mode .sub-description {
+    border-radius: 12px;    /* 모서리 둥글게 통일 */
+    min-height: 50px;       /* 설명란 최소 높이 확보 */
+    height: auto;
+    padding: 8px 12px;
+}
+
+/* 프로필 카드 이름 영역 확장 */
+.sheet.minimal-mode .name-section {
+    width: auto;            /* 고정 너비 해제 */
+    flex-grow: 1;
+}
+
+.sheet.minimal-mode .name-texts {
+    width: 100%;
+    align-items: flex-start; /* 왼쪽 정렬 */
+}
+
+/* 상단 안내 문구 스타일 */
+.top-notice {
+    position: fixed;        /* 화면 상단에 고정 */
+    top: 20px;              /* 위에서부터의 간격 */
+    left: 50%;
+    transform: translateX(-50%); /* 정확히 중앙 정렬 */
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6); /* 은은한 흰색 */
+    font-size: 13px;
+    z-index: 500;           /* 다른 요소 위에 표시 */
+    pointer-events: none;   /* 마우스 클릭 통과 (뒤에 있는 요소 클릭 방해 안 함) */
+    line-height: 1.5;       /* 줄 간격 */
+    width: 100%;            /* 너비 확보 */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5); /* 글씨 잘 보이게 그림자 */
+}
+
+/* 안내 문구 단락 간격 제거 */
+.top-notice p {
+    margin: 0;
+}
+
+/* [추가] 밈적 캐해석(납작한 해석) 라인 스타일 */
+.meme-line {
+    margin-top: 8px; /* 테마 바와의 간격 */
+    width: 100%;
+    height: 30px;
+    background: var(--component-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 50px; /* 둥근 캡슐 모양 */
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    gap: 6px;
+    font-size: 11px;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
+}
+
+.meme-icon {
+    color: #ff4d4d; /* 빨간색 느낌표 */
+    font-weight: 900;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.meme-desc {
+    color: #bbb; /* 회색 설명 텍스트 */
+    flex-grow: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    min-width: 50px;
+}
+
+.meme-tag {
+    color: #333; /* 검은색 해시태그 */
+    font-weight: bold;
+    text-align: right;
+    max-width: 60%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+/* 다크모드 대응 */
+body.dark-mode .meme-tag { color: #eee; }

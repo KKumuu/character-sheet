@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Character Sheet Final Polish v3</title>
+    <title>누덕누덕 설정표</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -11,10 +11,15 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
+    <div class="top-notice hide-on-save">
+        <p>모든 텍스트 칸은 수정 가능합니다. (ex.외적특징, #해시태그 같은 부분)</p>
+        <p>더미텍스트로 적혀있는 부분은 수정하지 않으시면 저장시 출력되지 않습니다.</p>
+    </div>
     <nav class="sidebar left-sidebar hide-on-save">
         <div class="menu-group">
             <div class="menu-item" data-title="1인 모드" onclick="setMode(1)"><span class="material-icons">person</span></div>
             <div class="menu-item" data-title="2인 모드" onclick="setMode(2)"><span class="material-icons">people</span></div>
+            <div class="menu-item" id="btn-minimal" data-title="미니멀 모드" onclick="toggleMinimalMode()"><span class="material-icons">crop_portrait</span></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
@@ -69,7 +74,7 @@
     <div id="sheet-container" class="sheet mode-1">
         <div id="sticker-layer"></div>
         <div class="copyright-fixed auto-shrink" contenteditable="true" data-default="ⓒ 이미지 출처" oninput="autoFitText(this)">ⓒ 이미지 출처</div>
-        <div class="other-info-fixed auto-shrink" contenteditable="true" data-default="색상 보정에 크게 신경쓰지 않습니다." oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
+        <div class="other-info-fixed auto-shrink" contenteditable="true" oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
         
         <div id="pair-name-wrapper" style="display:none;">
             <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;"><span class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">Sub Text</span><div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div></div>
@@ -103,6 +108,11 @@
                     </div>
                     <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
                     <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p1-grad-bar"><div class="click-zone left" onclick="triggerColor('p1-gs')"></div><div class="click-zone right" onclick="triggerColor('p1-ge')"></div><input type="color" id="p1-gs" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"><input type="color" id="p1-ge" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"></div></div>
+                    <div class="meme-line" style="margin-top: 0;">
+                        <span class="meme-icon">!</span>
+                        <span class="meme-desc auto-shrink" contenteditable="true" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
+                        <span class="meme-tag auto-shrink" contenteditable="true" data-default="ex)#냥상츤데레미소녀" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
+                    </div>
                 </div>
             </div>
         </div> 
@@ -133,6 +143,11 @@
                     </div>
                     <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
                     <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p2-grad-bar"><div class="click-zone left" onclick="triggerColor('p2-gs')"></div><div class="click-zone right" onclick="triggerColor('p2-ge')"></div><input type="color" id="p2-gs" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"><input type="color" id="p2-ge" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"></div></div>
+                    <div class="meme-line" style="margin-top: 0;">
+                        <span class="meme-icon">!</span>
+                        <span class="meme-desc auto-shrink" contenteditable="true" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
+                        <span class="meme-tag auto-shrink" contenteditable="true" data-default="ex)#냥상츤데레미소녀" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
+                    </div>
                 </div>
             </div>
         </div>

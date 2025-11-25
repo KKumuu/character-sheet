@@ -348,3 +348,21 @@ function saveImage() {
         body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = el.dataset.originalColor || ''; });
     }).catch(err => { body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = ''; }); alert('저장 실패: ' + err); });
 }
+
+// [추가] 미니멀 모드 토글 함수
+function toggleMinimalMode() {
+    const sheet = document.getElementById('sheet-container');
+    const btn = document.getElementById('btn-minimal');
+    
+    // 클래스 토글 (ON/OFF)
+    sheet.classList.toggle('minimal-mode');
+    
+    // 버튼 활성화 스타일 표시 (선택 사항)
+    if (sheet.classList.contains('minimal-mode')) {
+        btn.classList.add('active-link');
+        btn.querySelector('.material-icons').textContent = 'crop_square'; // 아이콘 변경 (꽉 찬 네모)
+    } else {
+        btn.classList.remove('active-link');
+        btn.querySelector('.material-icons').textContent = 'crop_portrait'; // 아이콘 복구
+    }
+}
