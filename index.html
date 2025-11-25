@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>캐릭터 시트 생성기</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="controls">
+        <button onclick="saveImage()">이미지로 저장하기 📸</button>
+    </div>
+    <div id="sheet-container" class="sheet">
+        <div class="left-column">
+            <div class="image-box main-pic" onclick="triggerUpload('file-main')">
+                <span>클릭해서<br>전신/반신 업로드</span>
+                <input type="file" id="file-main" accept="image/*" onchange="loadImage(event, 'file-main')">
+            </div>
+        </div>
+        <div class="right-column">
+            <div class="sub-box-container">
+                <div class="image-box sub-pic" onclick="triggerUpload('file-sub1')">
+                    <span class="placeholder-text">외적특징<br>#설명</span>
+                    <input type="file" id="file-sub1" accept="image/*" onchange="loadImage(event, 'file-sub1')">
+                </div>
+                <div class="image-box sub-pic" onclick="triggerUpload('file-sub2')">
+                    <span class="placeholder-text">표정참고<br>#이모티콘 가능</span>
+                    <input type="file" id="file-sub2" accept="image/*" onchange="loadImage(event, 'file-sub2')">
+                </div>
+                <div class="image-box sub-pic" onclick="triggerUpload('file-sub3')">
+                    <span class="placeholder-text">동물모에화<br>#설명</span>
+                    <input type="file" id="file-sub3" accept="image/*" onchange="loadImage(event, 'file-sub3')">
+                </div>
+            </div>
+            <div class="palette-area">
+                <div class="color-circle" contenteditable="true" style="background:#ddd;">HAIR</div>
+                <div class="color-circle" contenteditable="true" style="background:#ddd;">EYE (L)</div>
+                <div class="color-circle" contenteditable="true" style="background:#ddd;">EYE (R)</div>
+            </div>
+        </div>
+        <div class="bottom-section">
+            <div class="name-box">
+                <h1 contenteditable="true">이름</h1>
+                <p contenteditable="true">영어 or 원문</p>
+            </div>
+            <div class="stats-box" contenteditable="true">
+                성별 | 나이 | 키cm | 몸무게kg | 체격
+            </div>
+            <div class="theme-box">
+                <span>THEME</span>
+                <div class="theme-bar" contenteditable="true">테마곡이나 분위기를 입력하세요</div>
+            </div>
+            <div class="comment-box">
+                <span class="red-tag">! 참고용 납작한 밈적 캐해석</span>
+                <span contenteditable="true" class="hash-text">#예를들어극I100%음습한안경문학소녀</span>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

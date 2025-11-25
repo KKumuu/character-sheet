@@ -1,0 +1,40 @@
+﻿body {
+    background-color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-family: 'Pretendard', 'Malgun Gothic', sans-serif;
+}
+.controls { margin: 20px; }
+button { padding: 10px 20px; cursor: pointer; background: #333; color: #fff; border: none; border-radius: 5px; }
+.sheet {
+    width: 600px; height: 850px; background: white; padding: 20px; border-radius: 20px;
+    display: grid; grid-template-columns: 1.2fr 0.8fr; grid-template-rows: 1fr auto;
+    gap: 15px; box-shadow: 0 0 20px rgba(0,0,0,0.1); position: relative;
+}
+.image-box {
+    background-color: #e0e0e0; border-radius: 15px; display: flex; align-items: center;
+    justify-content: center; color: #666; text-align: center; cursor: pointer;
+    overflow: hidden; position: relative; background-size: cover; background-position: center;
+}
+.image-box:hover { background-color: #d0d0d0; }
+input[type="file"] { display: none; }
+.left-column { grid-column: 1 / 2; grid-row: 1 / 2; display: flex; }
+.main-pic { width: 100%; height: 100%; min-height: 500px; }
+.right-column { grid-column: 2 / 3; grid-row: 1 / 2; display: flex; flex-direction: column; gap: 15px; }
+.sub-box-container { display: flex; flex-direction: column; gap: 15px; flex-grow: 1; }
+.sub-pic { flex: 1; min-height: 120px; font-size: 12px; }
+.bottom-section { grid-column: 1 / 3; grid-row: 2 / 3; display: flex; flex-direction: column; gap: 10px; }
+.name-box { border: 2px solid #eee; border-radius: 15px; padding: 10px 20px; }
+.name-box h1 { margin: 0; font-size: 24px; }
+.name-box p { margin: 0; color: #888; font-size: 14px; }
+.palette-area { display: flex; justify-content: space-around; margin-top: 10px; }
+.color-circle {
+    width: 50px; height: 50px; border-radius: 50%; background: #ddd; display: flex;
+    align-items: flex-end; justify-content: center; font-size: 10px; padding-bottom: -15px; text-align: center; overflow: hidden;
+}
+.stats-box { border: 2px solid #4CD964; border-radius: 20px; padding: 10px; text-align: center; font-weight: bold; }
+.theme-box { display: flex; align-items: center; gap: 10px; }
+.theme-bar { flex-grow: 1; background: #eee; height: 20px; border-radius: 10px; padding: 5px 10px; font-size: 12px; line-height: 20px; }
+.comment-box { border: 1px solid #ddd; border-radius: 20px; padding: 10px; font-size: 13px; display: flex; gap: 10px; }
+.red-tag { color: red; font-weight: bold; }
