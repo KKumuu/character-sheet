@@ -313,6 +313,8 @@ function addSticker(event) {
             img.onload = function() {
                 const ratio = img.width / img.height; 
                 sticker.style.width = '100px'; sticker.style.height = (100 / ratio) + 'px';
+                img.setAttribute('draggable', 'false');
+                img.ondragstart = () => false;
                 sticker.innerHTML = '<img src="' + e.target.result + '"><div class="control-btn delete-btn material-icons">close</div><div class="control-btn rotate-handle material-icons">refresh</div><div class="control-btn resize-handle material-icons">open_in_full</div>';
                 sticker.querySelector('.delete-btn').onclick = (ev) => { ev.stopPropagation(); sticker.remove(); };
                 sticker.onmousedown = (ev) => { 
@@ -600,4 +602,5 @@ function loadFromSlot(slotNum) {
     
     showToastModal('데이터를 불러왔습니다.');
 }
+
 
