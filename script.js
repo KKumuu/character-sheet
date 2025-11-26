@@ -9,7 +9,7 @@ function loadImage(event, id) {
             const ph = container.querySelector('.placeholder-text, .plus, .placeholder');
             const em = container.querySelector('.emoji-display');
             if(ph) ph.style.display = 'none';
-            if(em) em.textContent = ''; // 이모티콘 초기화
+            if(em) em.textContent = '';
             if(id.includes('profile-bg')) container.style.backgroundColor = 'transparent';
         }
         reader.readAsDataURL(file);
@@ -332,7 +332,7 @@ function addSticker(event) {
         reader.readAsDataURL(file);
     }
 }
-document.addEventListener('mousedown', function(e){ if(!e.target.closest('.sticker')) document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); if (!e.target.closest('.color-pickers') && !e.target.closest('.inner-palette-btn') && !e.target.closest('.menu-item')) { document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show')); } });
+document.addEventListener('mousedown', function(e){ if(!e.target.closest('.sticker')) document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); if (!e.target.closest('.color-pickers') && !e.target.closest('.inner-palette-btn') && !e.target.closest('.menu-item') && !e.target.closest('.round-btn')) { document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show')); } });
 function showResetModal() { document.getElementById('reset-modal').classList.add('show'); }
 function closeResetModal() { document.getElementById('reset-modal').classList.remove('show'); }
 function resetPage() { try { localStorage.clear(); sessionStorage.clear(); } catch(e) {} location.reload(); }
@@ -364,7 +364,6 @@ function toggleMinimalMode() {
     }
 }
 
-// 이모티콘 관련 로직
 let currentEmojiTargetId = null;
 
 function openEmojiPicker(event, targetDisplayId) {
@@ -379,7 +378,6 @@ function closeEmojiModal(event) {
     }
 }
 
-// 이모티콘 선택 이벤트 리스너 (DOM이 로드된 후 실행)
 document.addEventListener('DOMContentLoaded', () => {
     const picker = document.querySelector('emoji-picker');
     if(picker) {
@@ -388,7 +386,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const display = document.getElementById(currentEmojiTargetId);
                 if(display) {
                     display.textContent = event.detail.unicode;
-                    // 배경 이미지나 플러스 버튼 숨기기 로직 연동
                     const container = display.parentElement;
                     container.style.backgroundImage = 'none';
                     const ph = container.querySelector('.plus');
@@ -398,4 +395,185 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('emoji-modal').classList.remove('show');
         });
     }
+    updateSlotInfo();
 });
+
+function toggleUI() {
+    document.body.classList.toggle('ui-hidden');
+    const icon = document.getElementById('ui-icon');
+    if (document.body.classList.contains('ui-hidden')) {
+        icon.textContent = 'visibility_off';
+    } else {
+        icon.textContent = 'visibility';
+    }
+}
+
+function closeModalOnClickOutside(event, modalId) {
+    if (event.target.id === modalId) {
+        document.getElementById(modalId).classList.remove('show');
+    }
+}
+
+document.addEventListener('keydown', function(e) {
+    if (e.target.isContentEditable && e.key === 'Enter') {
+        e.preventDefault();
+        document.execCommand('insertLineBreak');
+    }
+});
+
+let currentMode = 'save';
+
+function openSlotModal(mode) {
+    currentMode = mode;
+    document.getElementById('slot-modal-title').textContent = mode === 'save' ? '저장할 슬롯 선택' : '불러올 슬롯 선택';
+    updateSlotInfo();
+    document.getElementById('slot-modal').classList.add('show');
+}
+
+function closeSlotModal() {
+    document.getElementById('slot-modal').classList.remove('show');
+}
+
+function showToastModal(message) {
+    document.getElementById('toast-message').textContent = message;
+    document.getElementById('toast-modal').classList.add('show');
+    setTimeout(closeToastModal, 1500); 
+}
+
+function closeToastModal() {
+    document.getElementById('toast-modal').classList.remove('show');
+}
+
+function updateSlotInfo() {
+    for (let i = 1; i <= 3; i++) {
+        const data = localStorage.getItem('sheetData_' + i);
+        const infoSpan = document.getElementById('slot-info-' + i);
+        if (data) {
+            const parsed = JSON.parse(data);
+            infoSpan.textContent = parsed.timestamp || '저장됨';
+            infoSpan.style.color = '#4CAF50';
+        } else {
+            infoSpan.textContent = '비어있음';
+            infoSpan.style.color = '#888';
+        }
+    }
+}
+
+function processSlot(slotNum) {
+    if (currentMode === 'save') {
+        saveToSlot(slotNum);
+    } else {
+        loadFromSlot(slotNum);
+    }
+    closeSlotModal();
+}
+
+function clearSlot(slotNum, event) {
+    event.stopPropagation();
+    if (confirm('Slot ' + slotNum + '을(를) 비우시겠습니까?')) {
+        localStorage.removeItem('sheetData_' + slotNum);
+        updateSlotInfo();
+        showToastModal('Slot ' + slotNum + '이(가) 비워졌습니다.');
+    }
+}
+
+function saveToSlot(slotNum) {
+    const data = {
+        timestamp: new Date().toLocaleString(),
+        texts: [],
+        colors: [],
+        bgImages: [], 
+        mode: document.getElementById('sheet-container').classList.contains('mode-2') ? 2 : 1,
+        isDark: document.body.classList.contains('dark-mode')
+    };
+
+    document.querySelectorAll('[contenteditable]').forEach((el, index) => {
+        data.texts.push({ index: index, html: el.innerHTML, id: el.id, className: el.className });
+    });
+
+    document.querySelectorAll('input[type=color]').forEach((el, index) => {
+        data.colors.push({ index: index, value: el.value, id: el.id, name: el.name });
+    });
+
+    const imgContainers = document.querySelectorAll('.sub-img, .main-pic-area, .album-art, .profile-image-area, #sheet-container'); 
+    imgContainers.forEach((el, index) => {
+        if (el.style.backgroundImage && !el.style.backgroundImage.includes('none')) {
+             data.bgImages.push({ index: index, id: el.id, bg: el.style.backgroundImage });
+        }
+        const em = el.querySelector('.emoji-display');
+        if(em && em.textContent) {
+             data.bgImages.push({ index: index, id: el.id, emoji: em.textContent });
+        }
+    });
+
+    try {
+        localStorage.setItem('sheetData_' + slotNum, JSON.stringify(data));
+        showToastModal('Slot ' + slotNum + '에 저장되었습니다.');
+    } catch (e) {
+        alert('저장 용량이 부족합니다. (사진이 너무 큽니다)');
+    }
+}
+
+function loadFromSlot(slotNum) {
+    const json = localStorage.getItem('sheetData_' + slotNum);
+    if (!json) {
+        alert('해당 슬롯에 저장된 데이터가 없습니다.');
+        return;
+    }
+
+    const data = JSON.parse(json);
+
+    setMode(data.mode);
+    const isDark = document.body.classList.contains('dark-mode');
+    if (data.isDark && !isDark) toggleDarkMode();
+    if (!data.isDark && isDark) toggleDarkMode();
+
+    const textEls = document.querySelectorAll('[contenteditable]');
+    data.texts.forEach(item => {
+        if(textEls[item.index] && textEls[item.index].id === item.id) {
+             textEls[item.index].innerHTML = item.html;
+             autoFitText(textEls[item.index]);
+        }
+    });
+
+    const colorInputs = document.querySelectorAll('input[type=color]');
+    data.colors.forEach(item => {
+        if(colorInputs[item.index]) {
+            colorInputs[item.index].value = item.value;
+            colorInputs[item.index].dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    });
+
+    const imgContainers = document.querySelectorAll('.sub-img, .main-pic-area, .album-art, .profile-image-area, #sheet-container');
+    imgContainers.forEach((el, index) => {
+        el.style.backgroundImage = 'none';
+        const ph = el.querySelector('.placeholder-text, .plus, .placeholder');
+        if(ph) ph.style.display = 'block';
+        const em = el.querySelector('.emoji-display');
+        if(em) em.textContent = '';
+    });
+    
+    data.bgImages.forEach(item => {
+        const containerIndex = Array.from(imgContainers).findIndex(el => el.id === item.id);
+        if(containerIndex !== -1) {
+            const el = imgContainers[containerIndex];
+            if(item.bg) {
+                el.style.backgroundImage = item.bg;
+                const ph = el.querySelector('.placeholder-text, .plus, .placeholder');
+                if(ph) ph.style.display = 'none';
+                if(el.id.includes('profile-bg')) el.style.backgroundColor = 'transparent';
+            }
+            if(item.emoji) {
+                const em = el.querySelector('.emoji-display');
+                if(em) {
+                    em.textContent = item.emoji;
+                    el.style.backgroundImage = 'none';
+                    const ph = el.querySelector('.plus');
+                    if(ph) ph.style.display = 'none';
+                }
+            }
+        }
+    });
+    
+    showToastModal('데이터를 불러왔습니다.');
+}

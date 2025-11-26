@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>누덕누덕 설정표</title>
+    <title>Character Sheet</title>
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
@@ -16,6 +16,25 @@
         <p>모든 텍스트 칸은 수정 가능합니다. (ex.외적특징, #해시태그 같은 부분)</p>
         <p>더미텍스트로 적혀있는 부분은 수정하지 않으시면 저장시 출력되지 않습니다.</p>
     </div>
+    
+    <div class="top-right-controls hide-on-save">
+        <div class="round-btn" onclick="openSlotModal('save')" data-title="임시 저장">
+            <span class="material-icons">save</span>
+        </div>
+        <div class="round-btn" onclick="openSlotModal('load')" data-title="불러오기">
+            <span class="material-icons">folder_open</span>
+        </div>
+    </div>
+
+    <div class="bottom-right-controls hide-on-save">
+        <div class="round-btn ui-toggle-btn" onclick="toggleUI()" data-title="UI 끄기/켜기">
+            <span class="material-icons" id="ui-icon">visibility</span>
+        </div>
+        <div class="round-btn reset-btn-style" onclick="showResetModal()" data-title="초기화">
+            <span class="material-icons">refresh</span>
+        </div>
+    </div>
+
     <nav class="sidebar left-sidebar hide-on-save">
         <div class="menu-group">
             <div class="menu-item" data-title="1인 모드" onclick="setMode(1)"><span class="material-icons">person</span></div>
@@ -59,13 +78,29 @@
             <div class="menu-item" data-title="P2 플레이어 글씨"><span class="material-icons">title</span><input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p2-music')"></div>
         </div>
     </nav>
-    <div class="reset-btn hide-on-save" onclick="showResetModal()" title="초기화"><span class="material-icons">refresh</span></div>
     
-    <div id="reset-modal" class="modal hide-on-save">
+    <div id="reset-modal" class="modal hide-on-save" onclick="closeModalOnClickOutside(event, 'reset-modal')">
         <div class="modal-content"><h3>초기화 하시겠습니까?</h3><p>모든 내용이 사라집니다.</p><div class="modal-btns"><button onclick="resetPage()">초기화</button><button onclick="closeResetModal()" style="background:#ddd; color:#333">취소</button></div></div>
     </div>
 
-    <div id="emoji-modal" class="modal hide-on-save" onclick="closeEmojiModal(event)">
+    <div id="slot-modal" class="modal hide-on-save" onclick="closeModalOnClickOutside(event, 'slot-modal')">
+        <div class="modal-content" style="width: 350px;">
+            <h3 id="slot-modal-title">저장할 슬롯 선택</h3>
+            <p style="margin-bottom: 15px; font-size: 12px; color:#888;">브라우저에 임시 저장됩니다.</p>
+            <div class="slot-list">
+                <div class="slot-wrapper"><div class="slot-item" onclick="processSlot(1)"><span>Slot 1</span><span class="slot-info" id="slot-info-1">비어있음</span></div><div class="slot-delete-btn" onclick="clearSlot(1, event)" data-title="비우기"><span class="material-icons">delete</span></div></div>
+                <div class="slot-wrapper"><div class="slot-item" onclick="processSlot(2)"><span>Slot 2</span><span class="slot-info" id="slot-info-2">비어있음</span></div><div class="slot-delete-btn" onclick="clearSlot(2, event)" data-title="비우기"><span class="material-icons">delete</span></div></div>
+                <div class="slot-wrapper"><div class="slot-item" onclick="processSlot(3)"><span>Slot 3</span><span class="slot-info" id="slot-info-3">비어있음</span></div><div class="slot-delete-btn" onclick="clearSlot(3, event)" data-title="비우기"><span class="material-icons">delete</span></div></div>
+            </div>
+            <div class="modal-btns" style="margin-top: 20px;"><button onclick="closeSlotModal()" style="background:#ddd; color:#333; width: 100%;">닫기</button></div>
+        </div>
+    </div>
+
+    <div id="toast-modal" class="modal hide-on-save" onclick="closeModalOnClickOutside(event, 'toast-modal')">
+        <div class="modal-content" style="width: 300px;"><h3 id="toast-message" style="margin: 20px 0; font-size:16px;">완료되었습니다.</h3><div class="modal-btns"><button onclick="closeToastModal()" style="background:#555; color:white; width: 100%;">확인</button></div></div>
+    </div>
+
+    <div id="emoji-modal" class="modal hide-on-save" onclick="closeModalOnClickOutside(event, 'emoji-modal')">
         <div class="modal-content emoji-content">
             <emoji-picker class="light"></emoji-picker>
         </div>
@@ -80,14 +115,15 @@
             <div class="modal-btns"><button onclick="applyCrop()">적용</button><button onclick="closeCropper()" style="background:#ddd; color:#333">취소</button></div>
         </div>
     </div>
+
     <div id="sheet-container" class="sheet mode-1">
         <div id="sticker-layer"></div>
-        <div class="copyright-fixed auto-shrink" contenteditable="true" data-default="ⓒ 이미지 출처" oninput="autoFitText(this)">ⓒ 이미지 출처</div>
-        <div class="other-info-fixed auto-shrink" contenteditable="true" oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
+        <div class="copyright-fixed auto-shrink" contenteditable="true" spellcheck="false" data-default="ⓒ 이미지 출처" oninput="autoFitText(this)">ⓒ 이미지 출처</div>
+        <div class="other-info-fixed auto-shrink" contenteditable="true" spellcheck="false" data-default="색상 보정에 크게 신경쓰지 않습니다." oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
         
         <div id="pair-name-wrapper" style="display:none;">
-            <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;"><span class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">Sub Text</span><div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div></div>
-            <div id="pair-name-container" class="pair-name font-style-1 auto-shrink" contenteditable="true" data-default="Pair Name" oninput="autoFitText(this)">Pair Name</div>
+            <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;"><span class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">Sub Text</span><div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div></div>
+            <div id="pair-name-container" class="pair-name font-style-1 auto-shrink" contenteditable="true" spellcheck="false" data-default="Pair Name" oninput="autoFitText(this)">Pair Name</div>
             <div class="pair-controls hide-on-save"><span class="material-icons" onclick="changePairSize(2)">add</span><span class="material-icons" onclick="changePairSize(-2)">remove</span><span class="material-icons" onclick="changePairPos(-5)">arrow_upward</span><span class="material-icons" onclick="changePairPos(5)">arrow_downward</span><span class="material-icons" onclick="togglePairSubLabel()">subtitles</span></div>
         </div>
         <div class="profile-set" id="p1-set">
@@ -96,13 +132,13 @@
                 <div class="status-bar glass-bar no-select"><span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span></div>
                 <div class="music-player glass-effect music-box" id="p1-music">
                     <div class="album-art" id="p1-album-bg"><span class="material-icons-outlined placeholder no-select">album</span><input type="file" accept="image/*" onchange="openCropper(event, 'p1-album-bg')"></div>
-                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
+                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" spellcheck="false" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" spellcheck="false" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" spellcheck="false" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
                 </div>
                 <div class="dock-bar glass-bar no-select"><div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div><div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div><div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div></div>
             </div>
             <div class="info-frame">
                 <div class="bubble-row">
-                    <div class="bubble" id="p1-bubble"><span class="auto-shrink" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p1-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
+                    <div class="bubble" id="p1-bubble"><span class="auto-shrink" contenteditable="true" spellcheck="false" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p1-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
                     <div class="color-pickers dropdown" id="p1-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p1-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p1-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
@@ -113,7 +149,7 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub1')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub1-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                     
                     <div class="sub-row">
@@ -123,7 +159,7 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub2')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub2-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                     
                     <div class="sub-row">
@@ -133,20 +169,20 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p1-sub3')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p1-sub3-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                 </div>
                 <div class="profile-card">
                     <div class="name-row">
-                        <div class="name-section"><div class="profile-image-area" id="p1-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p1-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div></div>
+                        <div class="name-section"><div class="profile-image-area" id="p1-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p1-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" spellcheck="false" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true" spellcheck="false">Name</p></div></div>
                         <div class="palettes no-select"><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div></div>
                     </div>
-                    <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
+                    <div class="stats-line auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
                     <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p1-grad-bar"><div class="click-zone left" onclick="triggerColor('p1-gs')"></div><div class="click-zone right" onclick="triggerColor('p1-ge')"></div><input type="color" id="p1-gs" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"><input type="color" id="p1-ge" value="#333333" oninput="updateGradient('p1-gs','p1-ge','p1-grad-bar')"></div></div>
                     <div class="meme-line">
                         <span class="meme-icon">!</span>
-                        <span class="meme-desc auto-shrink" contenteditable="true" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
-                        <span class="meme-tag auto-shrink" contenteditable="true" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
+                        <span class="meme-desc auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
+                        <span class="meme-tag auto-shrink" contenteditable="true" spellcheck="false" data-default="ex)#냥상츤데레미소녀" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
                     </div>
                 </div>
             </div>
@@ -157,13 +193,13 @@
                 <div class="status-bar glass-bar no-select"><span class="material-icons small">close</span><span class="status-title">프로필</span><span class="material-icons small">more_horiz</span></div>
                 <div class="music-player glass-effect music-box" id="p2-music">
                     <div class="album-art" id="p2-album-bg"><span class="material-icons-outlined placeholder no-select">album</span><input type="file" accept="image/*" onchange="openCropper(event, 'p2-album-bg')"></div>
-                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
+                    <div class="music-info"><div class="song-title auto-shrink" contenteditable="true" spellcheck="false" data-default="Title" oninput="autoFitText(this)">Title</div><div class="artist-name auto-shrink" contenteditable="true" spellcheck="false" data-default="Artist" oninput="autoFitText(this)">Artist</div><div class="lyrics auto-shrink" contenteditable="true" spellcheck="false" data-default="Lyrics here..." oninput="autoFitText(this)">Lyrics here...</div><div class="music-controls no-select"><span class="material-icons small">shuffle</span><span class="material-icons small">skip_previous</span><span class="material-icons play-icon">play_circle_filled</span><span class="material-icons small">skip_next</span><span class="material-icons small heart-btn" onclick="toggleLike(this)">favorite_border</span></div></div>
                 </div>
                 <div class="dock-bar glass-bar no-select"><div class="dock-item"><span class="material-icons icon-chat">chat_bubble</span><span class="sub-text-target">1:1채팅</span></div><div class="dock-item"><span class="material-icons icon-call">call</span><span class="sub-text-target">통화하기</span></div><div class="dock-item"><span class="material-icons icon-video">videocam</span><span class="sub-text-target">페이스톡</span></div></div>
             </div>
             <div class="info-frame">
                 <div class="bubble-row">
-                    <div class="bubble" id="p2-bubble"><span class="auto-shrink" contenteditable="true" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p2-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
+                    <div class="bubble" id="p2-bubble"><span class="auto-shrink" contenteditable="true" spellcheck="false" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p2-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
                      <div class="color-pickers dropdown" id="p2-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
@@ -174,7 +210,7 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub1')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub1-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                     
                     <div class="sub-row">
@@ -184,7 +220,7 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub2')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub2-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                     
                     <div class="sub-row">
@@ -194,20 +230,20 @@
                             <input type="file" accept="image/*" onchange="openCropper(event, 'p2-sub3')">
                             <div class="emoji-trigger material-icons hide-on-save" onclick="openEmojiPicker(event, 'p2-sub3-emoji')">sentiment_satisfied_alt</div>
                         </div>
-                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" oninput="autoFitText(this)">설명 입력</div></div>
+                        <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">동물모에화</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#동물</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
                 </div>
                 <div class="profile-card">
                     <div class="name-row">
-                        <div class="name-section"><div class="profile-image-area" id="p2-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p2-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true">Name</p></div></div>
+                        <div class="name-section"><div class="profile-image-area" id="p2-profile-bg"><input type="file" accept="image/*" onchange="openCropper(event, 'p2-profile-bg')"><div class="profile-color-trigger hide-on-save"><span class="material-icons">brush</span><input type="color" oninput="changeColor(this)"></div></div><div class="name-texts"><h1 contenteditable="true" spellcheck="false" class="auto-shrink" oninput="autoFitText(this)">이름</h1><p contenteditable="true" spellcheck="false">Name</p></div></div>
                         <div class="palettes no-select"><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">HAIR</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(L)</span></div><div class="palette-item"><div class="p-circle"><input type="color" oninput="changeColor(this)"></div><span class="p-label">EYE(R)</span></div></div>
                     </div>
-                    <div class="stats-line auto-shrink" contenteditable="true" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
+                    <div class="stats-line auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">성별 | 나이 | 키cm | 몸무게kg</div>
                     <div class="theme-section"><span class="theme-label no-select">THEME</span><div class="theme-bar" id="p2-grad-bar"><div class="click-zone left" onclick="triggerColor('p2-gs')"></div><div class="click-zone right" onclick="triggerColor('p2-ge')"></div><input type="color" id="p2-gs" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"><input type="color" id="p2-ge" value="#333333" oninput="updateGradient('p2-gs','p2-ge','p2-grad-bar')"></div></div>
                     <div class="meme-line">
                         <span class="meme-icon">!</span>
-                        <span class="meme-desc auto-shrink" contenteditable="true" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
-                        <span class="meme-tag auto-shrink" contenteditable="true" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
+                        <span class="meme-desc auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">참고용 납작한 밈적 캐해석</span>
+                        <span class="meme-tag auto-shrink" contenteditable="true" spellcheck="false" data-default="ex)#냥상츤데레미소녀" oninput="autoFitText(this)">ex)#냥상츤데레미소녀</span>
                     </div>
                 </div>
             </div>
