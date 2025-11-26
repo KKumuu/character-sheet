@@ -335,7 +335,30 @@ function addSticker(event) {
 document.addEventListener('mousedown', function(e){ if(!e.target.closest('.sticker')) document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); if (!e.target.closest('.color-pickers') && !e.target.closest('.inner-palette-btn') && !e.target.closest('.menu-item') && !e.target.closest('.round-btn')) { document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show')); } });
 function showResetModal() { document.getElementById('reset-modal').classList.add('show'); }
 function closeResetModal() { document.getElementById('reset-modal').classList.remove('show'); }
-function resetPage() { try { localStorage.clear(); sessionStorage.clear(); } catch(e) {} location.reload(); }
+
+function resetPage() {
+
+
+    try {
+        sessionStorage.clear(); 
+        
+        const keysToRemove = [];
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+
+            if (!key.startsWith('sheetData_')) { 
+                keysToRemove.push(key);
+            }
+        }
+        
+        keysToRemove.forEach(key => {
+            localStorage.removeItem(key);
+        });
+
+    } catch(e) {
+    } 
+    location.reload(); 
+}
 function saveImage() {
     const body = document.body; const sheet = document.getElementById("sheet-container");
     document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show'));
@@ -577,3 +600,4 @@ function loadFromSlot(slotNum) {
     
     showToastModal('데이터를 불러왔습니다.');
 }
+
