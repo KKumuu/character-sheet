@@ -450,7 +450,12 @@
         .mp-stats {
             font-size: 18px; color: var(--mp-text-color); text-align: center;
             margin-bottom: 20px; opacity: 0.8; width: 100%;
-            white-space: nowrap; overflow: hidden; height: 28px; line-height: 28px; flex-shrink: 0;
+            white-space: nowrap; 
+            overflow: hidden; 
+            height: 28px; 
+            line-height: 28px; 
+            flex-shrink: 0;
+            outline: none;
         }
         .mp-desc-box {
             width: 100%; min-height: 100px; background: var(--mp-card-bg);
@@ -514,7 +519,7 @@
         <div id="multiplayer-container">
             <div id="mp-sticker-layer" class="mp-sticker-layer"></div>
         </div>
-        <div class="add-card-btn hide-on-save" onclick="addCard()" title="인원 추가 (최대 5명)">
+        <div class="add-card-btn hide-on-save" onclick="addCard()" title="인원 추가 (최대 7명)">
             <span class="material-icons" style="font-size: 32px;">add</span>
         </div>
     </div>
@@ -760,7 +765,7 @@
     <script>
         let isMultiplayer = false;
         let cardCount = 0;
-        const maxCards = 5;
+        const maxCards = 7;
 
         function toggleMultiplayerMode() {
             isMultiplayer = !isMultiplayer;
@@ -1329,7 +1334,7 @@
                             <span class="mp-dot-label">EYE(R)</span>
                         </div>
                     </div>
-                    <div class="mp-stats" contenteditable="true" spellcheck="false" oninput="autoShrinkText(this)">키cm/나이</div>
+                    <div class="mp-stats" contenteditable="true" spellcheck="false">키cm/나이</div>
                 </div>
                 <div class="mp-desc-box" contenteditable="true" data-placeholder="설명을 입력하세요..."></div>
             `;
@@ -1364,5 +1369,3 @@
     </script>
 </body>
 </html>
-
-
