@@ -141,7 +141,7 @@
         #p1-set .phone-frame { color: var(--p1-text); }
         #p2-set .phone-frame { color: var(--p2-text); }
         .main-pic-area { flex-grow: 1; background: #e0e0e0; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; background-repeat: no-repeat; }
-        .placeholder-text { text-align: center; color: #999 !important; font-size: 12px; pointer-events: none; }
+        .placeholder-text { text-align: center; color: #999 !important; font-size: 12px; pointer-events: none; font-family: 'Pretendard', sans-serif !important; }
         .main-pic-area input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
         .glass-bar { background: var(--glass-bg); backdrop-filter: blur(8px); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); color: var(--phone-ui-text); text-shadow: 0 1px 2px rgba(0,0,0,0.3); position: absolute; width: 100%; z-index: 10; pointer-events: none; }
         .status-bar { top: 0; height: 50px; display: flex; justify-content: space-between; padding: 0 20px; align-items: center; font-size: 14px; }
@@ -434,6 +434,7 @@
         .mp-image-area:hover { filter: brightness(0.95); }
         .mp-image-area input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
         .mp-placeholder { text-align: center; color: #888; pointer-events: none; font-family: 'Pretendard', sans-serif !important; }
+        .mp-placeholder * { font-family: 'Material Icons' !important; }
         .mp-info { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .mp-name-kor {
             font-size: 36px; font-weight: 500; color: var(--mp-text-color);
@@ -1321,4 +1322,3 @@
     </script>
 </body>
 </html>
-
