@@ -3,23 +3,526 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>누덕누덕 설정틀</title>
+    <title>누덕누덕 설정틀 (통합 ver)</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css" type="text/css"/>
     <link rel="icon" type="image/png" href="ico.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Pixelify+Sans:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
-    <link rel="stylesheet" href="style.css">
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    <style>
+        :root {
+            --bg-color: #eef2f5; 
+            --p1-text: #333; --p2-text: #333; 
+            --sub-text-color: #888;
+            --frame-bg: #ffffff; --frame-border: #ffffff;
+            --component-bg: white; --input-bg: white; --input-border: #eee;
+            --shadow-color: rgba(0,0,0,0.08);
+            --accent-color: #444;
+            --sidebar-bg: #fff; --sidebar-icon: #555;
+            --sticker-border: #2196F3;
+            --pair-name-color: #333;
+            --pair-font: 'Dancing Script', cursive;
+            --glass-bg: rgba(255, 255, 255, 0.15); 
+            --glass-border: rgba(255,255,255,0.2);
+            --phone-ui-text: white; 
+            --mp-card-bg: #fff;
+            --mp-text-color: #333;
+            --mp-sub-text: #888;
+        }
+        body.dark-mode {
+            --bg-color: #222; 
+            --sub-text-color: #aaa;
+            --frame-bg: #2b2b2b; --frame-border: #444;
+            --component-bg: #444; --input-bg: #555; --input-border: #666;
+            --shadow-color: rgba(0,0,0,0.5);
+            --accent-color: #eee;
+            --sidebar-bg: #333; --sidebar-icon: #eee;
+            --glass-bg: rgba(0, 0, 0, 0.3); 
+            --glass-border: rgba(255,255,255,0.05);
+            --phone-ui-text: #eee; 
+            --mp-card-bg: #444;
+            --mp-text-color: #eee;
+            --mp-sub-text: #aaa;
+        }
+        body.dark-mode .save-btn-round .material-icons { color: #333 !important; }
+        body.dark-mode .stats-line { color: #eee; background: #444; border-color: #555; }
+        body.dark-mode .bubble { color: #eee; } 
+        body.dark-mode .meme-tag { color: #eee; }
+        body.dark-mode .round-btn { background: #eee; color: #333; }
+        body.dark-mode .reset-btn-style { background: #ff4d4d; color: white; }
+        * { box-sizing: border-box; font-family: 'Pretendard', sans-serif; outline: none; }
+        [contenteditable] {
+            font-family: 'Paperlogy', 'Pretendard', sans-serif !important;
+        }
+        .material-icons, .material-icons-outlined, img { user-select: none; -webkit-user-drag: none; }
+        .font-style-1 { font-family: 'Dancing Script', cursive !important; }
+        .font-style-2 { font-family: 'Pretendard', sans-serif !important; font-weight:800; text-transform:uppercase; letter-spacing:2px; }
+        .font-style-3 { font-family: 'Pixelify Sans', sans-serif !important; }
+        body { background-color: #333; margin: 0; padding: 20px; display: flex; min-height: 100vh; justify-content: center; align-items: center; }
+        .no-select { user-select: none; cursor: default; }
+        .sidebar { position: fixed; top: 50%; transform: translateY(-50%); background: var(--sidebar-bg); border-radius: 12px; padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000; transition: opacity 0.3s; }
+        .left-sidebar { left: 15px; } .right-sidebar { right: 15px; }
+        .menu-item { width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--sidebar-icon); transition: 0.2s; position: relative; }
+        .menu-item:hover { background: rgba(0,0,0,0.05); transform: scale(1.05); }
+        .menu-item input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; left:0; top:0; }
+        .menu-item.active-link { background-color: #e0f7fa; color: #00bcd4; border: 1px solid #00bcd4; }
+        .menu-item.active-link .material-icons { color: #00bcd4; }
+        .divider { width: 24px; height: 1px; background: #ddd; margin: 4px 0; }
+        .save-btn-round { background: var(--accent-color); border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.2); width: 44px; height: 44px; border-radius: 10px; cursor: pointer; display:flex; align-items:center; justify-content:center; color:white; transition:0.2s;}
+        .save-btn-round:hover { transform: scale(1.05); }
+        .menu-item::after, .save-btn-round::after, .reset-btn-style::after, .round-btn::after {
+            content: attr(data-title); position: absolute; left: 60px; top: 50%; transform: translateY(-50%); background: #333; color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; white-space: nowrap; opacity: 0; pointer-events: none; transition: 0.2s; visibility: hidden; z-index: 1100; box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            font-family: 'Pretendard', sans-serif !important;
+        }
+        .right-sidebar .menu-item::after, .reset-btn-style::after { left: auto; right: 60px; }
+        .mp-sidebar .reset-btn-style::after { left: 60px !important; right: auto !important; }
+        .menu-item:hover::after, .save-btn-round:hover::after, .reset-btn-style:hover::after, .round-btn:hover::after { opacity: 1; visibility: visible; }
+        .bottom-right-controls { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; align-items: center; transition: opacity 0.3s; }
+        .top-right-controls { position: fixed; top: 20px; right: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 1000; transition: opacity 0.3s; }
+        .round-btn { 
+            width: 50px; height: 50px; 
+            background: #fff; color: #555; 
+            border-radius: 50%; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; transition: 0.2s; position: relative; 
+        }
+        .round-btn:hover { transform: scale(1.1); background: rgba(0,0,0,0.05); }
+        .round-btn::after { left: auto; right: 60px; } 
+        .reset-btn-style { background: #ff4d4d; color: white; }
+        .reset-btn-style:hover { background: #ff3333; }
+        .reset-btn-style .material-icons { transition: 0.3s; }
+        .reset-btn-style:hover .material-icons { transform: rotate(180deg); }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; display: none; align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+        .emoji-content { width: 400px; padding: 0; border-radius: 10px; overflow: hidden; background: transparent; box-shadow: none;}
+        emoji-picker { width: 100%; height: 400px; border-radius: 10px; --background: var(--component-bg); --border-color: var(--input-border); }
+        .modal-btns { display: flex; gap: 10px; justify-content: center; margin-top: 15px; }
+        .modal-btns button { border: none; padding: 10px 20px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .modal-btns button:first-child { background: #ff4d4d; color: white; }
+        .slot-list { display: flex; flex-direction: column; gap: 10px; margin-top: 15px; }
+        .slot-wrapper { display: flex; gap: 8px; align-items: center; }
+        .slot-item { flex-grow: 1; background: #f5f5f5; padding: 12px; border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; border: 1px solid #eee; }
+        .slot-item:hover { background: #e0f7fa; border-color: #00bcd4; }
+        .slot-info { font-size: 11px; color: #888; }
+        .slot-delete-btn { width: 40px; height: 40px; background: #ff4d4d; color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: 0.2s; flex-shrink: 0; }
+        .slot-delete-btn:hover { background: #cc0000; }
+        .cropper-content { width: 90%; max-width: 500px; height: auto; max-height: 90vh; display: flex; flex-direction: column; }
+        .canvas-container {
+            width: 100%; height: 350px; background: #222; margin-bottom: 15px; overflow: hidden; border-radius: 10px; border: 1px solid #444;
+            display: flex; justify-content: center; align-items: center; position: relative;
+        }
+        #cropper-canvas { max-width: 95%; max-height: 95%; border: 2px solid #00d2ff; box-shadow: 0 0 15px rgba(0, 210, 255, 0.3); background-color: white; }
+        .cropper-controls { display: flex; align-items: center; gap: 10px; justify-content: center; margin-bottom: 20px; }
+        .icon-btn { background: none; color: #333; border: 1px solid #ddd; padding: 5px; border-radius: 5px; cursor: pointer; }
+        .auto-shrink { display: block; overflow: hidden; white-space: nowrap; width: 100%; }
+        #pair-name-container { width: 600px; height: 70px; text-align: center; overflow: hidden; }
+        #pair-sub-label-box span { display: block; max-width: 200px; height: 20px; overflow: hidden; white-space: nowrap; }
+        .sheet { 
+            background-color: var(--bg-color); background-size: cover; background-position: center; 
+            padding: 80px 60px 40px 60px; border-radius: 20px; transition: 0.3s; 
+            display: flex; gap: 15px; 
+            position: relative; 
+        }
+        .sheet.mode-1, .sheet.mode-2 { width: auto; justify-content: center; }
+        .pair-name { font-size: 50px; color: var(--pair-name-color); text-shadow: 0 2px 4px rgba(0,0,0,0.1); white-space: nowrap; font-family: var(--pair-font); cursor: text; transition: 0.2s; }
+        #pair-name-wrapper { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0px; z-index: 20; }
+        .pair-controls { display: flex; gap: 5px; background: rgba(255,255,255,0.8); padding: 4px; border-radius: 20px; opacity: 0; transition: 0.2s; pointer-events: none; }
+        #pair-name-wrapper:hover .pair-controls { opacity: 1; pointer-events: auto; }
+        .pair-sub-label { font-size: 14px; color: var(--sub-text-color); font-weight: bold; padding: 2px 8px; border-radius: 4px; position: relative; }
+        .pair-sub-color { position: absolute; right: -25px; top: 0; width: 20px; height: 20px; background: var(--accent-color); border-radius: 50%; cursor: pointer; opacity: 0; }
+        .pair-sub-label:hover .pair-sub-color { opacity: 1; }
+        .pair-sub-color input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .copyright-fixed { position: absolute; top: 30px; right: 40px; font-size: 10px; color: var(--sub-text-color); z-index: 10; max-width: 200px; text-align: right; overflow: hidden; white-space: nowrap; }
+        .other-info-fixed { position: absolute; top: 30px; left: 40px; font-size: 10px; color: var(--sub-text-color); z-index: 10; max-width: 200px; text-align: left; overflow: hidden; white-space: nowrap; }
+        .phone-frame { background-color: var(--frame-bg); border-radius: 30px; width: 290px; height: 660px; flex-shrink: 0; display: flex; flex-direction: column; position: relative; overflow: hidden; border: 8px solid var(--frame-border); box-shadow: 5px 8px 25px rgba(0,0,0,0.1); z-index: 10; }
+        #p1-set .phone-frame { color: var(--p1-text); }
+        #p2-set .phone-frame { color: var(--p2-text); }
+        .main-pic-area { flex-grow: 1; background: #e0e0e0; position: relative; display: flex; align-items: center; justify-content: center; cursor: pointer; background-size: cover; background-position: center; background-repeat: no-repeat; }
+        .placeholder-text { text-align: center; color: #999 !important; font-size: 12px; pointer-events: none; }
+        .main-pic-area input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .glass-bar { background: var(--glass-bg); backdrop-filter: blur(8px); border-top: 1px solid var(--glass-border); border-bottom: 1px solid var(--glass-border); color: var(--phone-ui-text); text-shadow: 0 1px 2px rgba(0,0,0,0.3); position: absolute; width: 100%; z-index: 10; pointer-events: none; }
+        .status-bar { top: 0; height: 50px; display: flex; justify-content: space-between; padding: 0 20px; align-items: center; font-size: 14px; }
+        .dock-bar { bottom: 0; height: 70px; display: flex; justify-content: space-evenly; align-items: center; padding-bottom: 5px; }
+        .dock-item { display: flex; flex-direction: column; align-items: center; gap: 2px; color: var(--phone-ui-text); width: 60px; cursor: default; text-shadow: none; }
+        .dock-item span:last-child { font-size: 9px; font-weight: 400; opacity: 0.9; transform: scale(0.95); }
+        .glass-effect { background: rgba(255,255,255,0.15); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); }
+        .music-player { position: absolute; bottom: 85px; left: 15px; right: 15px; padding: 12px; border-radius: 16px; display: flex; gap: 12px; align-items: center; color: white; z-index: 5; cursor: default; }
+        .album-art { width: 55px; height: 55px; border-radius: 10px; background: rgba(255,255,255,0.1); position: relative; overflow: hidden; cursor: pointer; flex-shrink: 0; background-size: cover; background-position: center; display: flex; justify-content: center; align-items: center; }
+        .album-art input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .music-info { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; }
+        .song-title { height: 18px; line-height: 18px; font-weight: bold; font-size: 13px; width: 100%; overflow: hidden; white-space: nowrap; display: block; }
+        .artist-name { height: 14px; line-height: 14px; font-size: 11px; opacity: 0.9; width: 100%; overflow: hidden; white-space: nowrap; display: block; }
+        .lyrics { height: 12px; line-height: 12px; font-size: 10px; opacity: 0.8; width: 100%; overflow: hidden; white-space: nowrap; display: block; }
+        .music-controls { display: flex; justify-content: space-between; align-items: center; font-size: 18px; opacity: 0.9; cursor: default; margin-top: 3px;}
+        .heart-btn.active { color: #ff4d4d; }
+        .info-frame { display: flex; flex-direction: column; width: 290px; padding-top: 0; height: 660px; }
+        #p1-set .info-frame { color: var(--p1-text); }
+        #p2-set .info-frame { color: var(--p2-text); }
+        .bubble { 
+            width: fit-content; max-width: 240px; min-width: 40px; min-height: 30px; height: auto; 
+            background: var(--component-bg); color: #333; padding: 8px 18px; border-radius: 16px; 
+            font-size: 14px; box-shadow: 2px 2px 8px var(--shadow-color); position: relative; 
+            border-top-left-radius: 0; display: flex; align-items: center; 
+        }
+        .bubble span.auto-shrink { white-space: pre-wrap; word-break: break-all; display: block; width: 100%; line-height: 1.3; }
+        .bubble::after { content: ''; position: absolute; top: 0; left: -8px; border-width: 0 10px 10px 0; border-style: solid; border-color: transparent var(--component-bg) transparent transparent; }
+        .bubble-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 15px; position: relative;}
+        .mode-2 #p1-set .bubble { border-top-left-radius: 16px; border-top-right-radius: 0; }
+        .mode-2 #p1-set .bubble::after { left: auto; right: -8px; border-width: 10px 10px 0 0; border-color: var(--component-bg) transparent transparent transparent; }
+        .mode-2 #p1-set .bubble-row { flex-direction: row-reverse; }
+        .inner-palette-btn { position: absolute; top: 4px; right: 4px; width: auto; height: auto; background: transparent; display: flex; align-items: center; justify-content: center; cursor: pointer; opacity: 0; transition: 0.2s; z-index: 5; }
+        .inner-palette-btn .material-icons { font-size: 14px; color: #bbb; text-shadow: 0 1px 1px rgba(0,0,0,0.1); }
+        .bubble:hover .inner-palette-btn { opacity: 1; }
+        .sub-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 15px; flex-grow: 1;}
+        .sub-row { display: flex; gap: 10px; align-items: flex-start; flex-grow: 1; }
+        .sub-img { 
+            width: 130px; height: 130px;
+            background: var(--input-bg); border-radius: 16px; position: relative; 
+            display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; 
+            background-size: cover; background-position: center; border: 1px solid var(--input-border); 
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+        }
+        .sub-img input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .plus { font-size: 24px; color: #ccc !important; } 
+        .sub-text-group { flex-grow: 1; display: flex; flex-direction: column; justify-content: flex-start; gap: 2px; height: 130px; min-width: 0; }
+        .sub-header-row { height: 16px; display: flex; font-size: 12px; align-items: center; overflow: hidden; width: 100%; }
+        .sub-header-row strong { max-width: 80px; } 
+        .sub-header-row .hash { margin-left: auto; max-width: 80px; font-size: 10px; color: var(--sub-text-color); text-align: right; }
+        .sub-description { 
+            background: var(--component-bg); padding: 4px 10px; border-radius: 12px; font-size: 12px; border: 1px solid var(--input-border); 
+            border-top-left-radius: 12px; overflow: hidden; display: flex; align-items: center; 
+            flex-grow: 1; height: 100%; color: var(--sub-text-color); 
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
+        }
+        .sub-description.auto-shrink { white-space: normal; }
+        .profile-set { display: flex; gap: 30px; transition: all 0.5s ease; }
+        .mode-1 .profile-set { flex-direction: row; }
+        .mode-2 .profile-set { gap: 30px; justify-content: center;}
+        .mode-2 #p1-set { flex-direction: row-reverse; } .mode-2 #p2-set { flex-direction: row; }
+        #p2-set { opacity: 0; width: 0; overflow: hidden; transition: opacity 0.5s ease, width 0.5s ease; }
+        .mode-2 #p2-set { opacity: 1; width: 610px; }
+        .profile-card { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0;}
+        .name-row { display: flex; align-items: center; gap: 10px; }
+        .name-section { flex-grow: 1; display: flex; align-items: center; gap: 10px; width: 170px; overflow: hidden; }
+        .profile-image-area { width: 45px; height: 45px; background: var(--input-bg); border-radius: 12px; position: relative; overflow: hidden; cursor: pointer; border: 1px solid var(--input-border); background-size: cover; background-position: center; flex-shrink: 0; }
+        .profile-image-area input[type=file] { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2;}
+        .profile-color-trigger { position: absolute; bottom: 2px; right: 2px; width: auto; height: auto; background: transparent; display: flex; align-items: center; justify-content: center; z-index: 5; pointer-events: none; }
+        .profile-color-trigger span { font-size: 14px; color: #bbb; text-shadow: 0 1px 2px rgba(0,0,0,0.2); }
+        .profile-color-trigger input { pointer-events: auto; position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; right:0; bottom:0; width:20px; height:20px;}
+        .name-texts { width: 130px; height: 45px; overflow: hidden; display: flex; flex-direction: column; justify-content: center; }
+        .name-texts h1 { margin: 0; font-size: 20px; color: inherit; height: 26px; line-height: 26px; overflow: hidden; white-space: nowrap; display: block; }
+        .name-texts p { margin: 0; font-size: 11px; color: var(--sub-text-color); height: 14px; line-height: 14px; overflow: hidden; white-space: nowrap; display: block; }
+        .palettes { display: flex; gap: 6px; }
+        .palette-item { display: flex; flex-direction: column; align-items: center; justify-content: center; } 
+        .p-circle { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--input-border); cursor: pointer; background: var(--input-bg); position: relative; }
+        .p-circle input { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; left:0; top:0;}
+        .p-label { font-size: 8px; color: var(--sub-text-color); margin-top: 2px; text-align: center; width: 100%; }
+        .stats-line { border: 1px solid var(--input-border); border-radius: 50px; padding: 0 8px; font-size: 11px; color: #333; text-align: center; background: var(--component-bg); width: 100%; height: 30px; line-height: 30px; overflow: hidden; }
+        .theme-section { display: flex; align-items: center; gap: 8px; }
+        .theme-label { font-size: 10px; font-weight: 800; color: var(--sub-text-color); }
+        .theme-bar { flex-grow: 1; height: 20px; border-radius: 10px; background: linear-gradient(to right, #333, #333); position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 1px solid var(--input-border); }
+        .click-zone { position: absolute; top: 0; width: 50%; height: 100%; cursor: pointer; z-index: 5; }
+        .click-zone.left { left: 0; } .click-zone.right { right: 0; }
+        .theme-bar input { position: absolute; opacity: 0; }
+        .color-pickers.dropdown { position: absolute; top: 25px; right: 0; background: var(--component-bg); padding: 8px; border-radius: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); display: none; flex-direction: column; gap: 5px; z-index: 100; border: 1px solid var(--input-border); min-width: 120px; }
+        .color-pickers.show { display: flex; }
+        .cp-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: #333;}
+        #sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; overflow: hidden; border-radius: 20px; }
+        .mp-sticker-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 50; overflow: visible; }
+        .sticker { position: absolute; pointer-events: auto; display: inline-block; cursor: grab; user-select: none;}
+        .sticker img { width: 100%; height: 100%; display: block; pointer-events: none; user-select: none; }
+        .sticker.selected { outline: 2px solid #2196F3; }
+        .sticker .control-btn { display: none; position: absolute; width: 24px; height: 24px; background: white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.2); align-items: center; justify-content: center; cursor: pointer; color: #333; font-size: 16px; z-index: 10; }
+        .sticker.selected .control-btn { display: flex; }
+        .sticker .delete-btn { top: -12px; right: -12px; color: #ff4444; }
+        .sticker .rotate-handle { top: -25px; left: 50%; transform: translateX(-50%); cursor: grab; color: #2196F3; }
+        .sticker .resize-handle { bottom: -12px; right: -12px; cursor: nwse-resize; color: #2196F3; }
+        body.capturing .hide-on-save, body.capturing .selected, body.capturing .control-btn { display: none !important; }
+        body.capturing .glass-bar { background: rgba(255, 255, 255, 0.4); border-color: rgba(255, 255, 255, 0.1); }
+        body.capturing .glass-effect { background: rgba(255, 255, 255, 0.25) !important; border: 1px solid rgba(255,255,255,0.3); box-shadow: 0 4px 10px rgba(0,0,0,0.1); backdrop-filter: none; }
+        body.dark-mode.capturing .glass-effect { background: rgba(0, 0, 0, 0.4) !important; border: 1px solid rgba(255,255,255,0.05); }
+        .sheet.minimal-mode .sub-img, .sheet.minimal-mode .profile-image-area { display: none !important; }
+        .sheet.minimal-mode .sub-text-group { height: auto; min-height: 80px; justify-content: center; }
+        .sheet.minimal-mode .sub-description { border-radius: 12px; min-height: 50px; height: auto; padding: 8px 12px; background: transparent; border: none; box-shadow: none; }
+        .sheet.minimal-mode .name-section { width: auto; flex-grow: 1; }
+        .sheet.minimal-mode .name-texts { width: 100%; align-items: flex-start; }
+        .sheet.minimal-mode .emoji-trigger { display: none; }
+        .top-notice { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); text-align: center; color: rgba(255, 255, 255, 0.6); font-size: 13px; z-index: 500; pointer-events: none; line-height: 1.5; width: 100%; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        .top-notice p { margin: 0; }
+        .meme-line {
+            width: 100%;
+            max-width: none;
+            margin-top: 0;
+            height: 30px;
+            background: var(--component-bg);
+            border: 1px solid var(--input-border);
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 8px;
+            box-sizing: border-box;
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.03);
+            overflow: hidden; 
+        }
+        .meme-icon {
+            color: #ff4d4d;
+            font-weight: 900;
+            font-size: 14px;
+            flex-shrink: 0; 
+        }
+        .meme-desc {
+            color: #bbb;
+            font-size: 11px;
+            white-space: nowrap;
+            overflow: hidden; 
+            text-overflow: ellipsis;
+            flex-grow: 1;
+            flex-shrink: 1; 
+            min-width: 0; 
+        }
+        .meme-tag {
+            color: #333;
+            font-weight: bold;
+            font-size: 11px;
+            text-align: right;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 45%; 
+            flex-shrink: 0; 
+            min-width: 0; 
+        }
+        body.dark-mode .meme-tag { color: #eee; }
+        .emoji-trigger {
+            position: absolute;
+            bottom: 5px;
+            right: 5px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 5;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            font-size: 16px;
+            color: #555;
+            transition: 0.2s;
+        }
+        .emoji-trigger:hover { transform: scale(1.1); background: #eee; }
+        .emoji-display {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 70px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        body.ui-hidden nav, 
+        body.ui-hidden .top-right-controls, 
+        body.ui-hidden .top-notice,
+        body.ui-hidden .reset-btn-style,
+        body.ui-hidden .profile-color-trigger, 
+        body.ui-hidden .inner-palette-btn,    
+        body.ui-hidden .emoji-trigger,
+        body.ui-hidden .bottom-right-controls,
+        body.ui-hidden .mode-switch-btn
+        {
+            visibility: hidden !important;
+            pointer-events: none;
+        }
+        body.ui-hidden .ui-toggle-btn {
+            visibility: visible !important;
+            pointer-events: auto;
+            background: #00bcd4;
+            color: white;
+            transform: scale(1.05);
+        }
+        body.ui-hidden .ui-toggle-btn:hover {
+            transform: scale(1.15);
+            background: #0097a7;
+        }
+        .mode-switch-btn {
+            position: fixed; top: 20px; left: 20px;
+            padding: 10px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #eee;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 13px; font-weight: bold;
+            transition: 0.3s;
+            z-index: 2500;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            display: flex; align-items: center; gap: 5px;
+            font-family: 'Pretendard', sans-serif !important;
+        }
+        .mode-switch-btn:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.05); color: white;}
+        .mp-sidebar { display: none; z-index: 2600; }
+        body.multiplayer-active .sidebar:not(.mp-sidebar),
+        body.multiplayer-active .top-right-controls,
+        body.multiplayer-active .bottom-right-controls,
+        body.multiplayer-active .top-notice {
+            display: none !important;
+        }
+        body.multiplayer-active .mp-sidebar { display: flex !important; }
+        #mp-wrapper { display: none; align-items: center; gap: 30px; }
+        #mp-wrapper.active { display: flex; }
+        #multiplayer-container {
+            display: flex;
+            background-color: var(--bg-color);
+            padding: 60px;
+            border-radius: 20px;
+            align-items: flex-start;
+            gap: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            min-height: 800px;
+            flex-wrap: nowrap;
+            position: relative; 
+        }
+        .mp-card {
+            width: 320px;
+            min-height: 700px;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            flex-shrink: 0;
+            padding: 10px;
+            transition: 0.3s;
+            z-index: 10; 
+        }
+        .mp-header { width: 100%; display: flex; justify-content: center; align-items: center; margin-bottom: 15px; position: relative; flex-shrink: 0; height: 60px; }
+        .mp-number-badge {
+            position: absolute; left: 0; top: 10px; width: 40px; height: 40px;
+            background-color: #ddd; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 18px; color: #333;
+            cursor: pointer; overflow: hidden; flex-shrink: 0;
+            border: 2px solid white; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-family: 'Pretendard', sans-serif !important; 
+        }
+        .mp-number-badge input[type="color"] { position: absolute; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+        .mp-number-text { z-index: 2; pointer-events: none; }
+        .mp-titles { text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%; flex-shrink: 0; }
+        .mp-title-main {
+            font-size: 32px; font-weight: 900; color: var(--mp-text-color);
+            margin-bottom: 0; min-width: 100px; max-width: 200px;
+            white-space: nowrap; overflow: hidden;
+            height: 38px; line-height: 38px; flex-shrink: 0;
+        }
+        .mp-title-sub {
+            font-size: 14px; font-weight: 300; color: var(--mp-text-color);
+            letter-spacing: 2px; text-transform: uppercase;
+            height: 20px; line-height: 20px; flex-shrink: 0;
+        }
+        .mp-image-area {
+            width: 100%; height: 420px; background-color: #dcdcdc;
+            margin-bottom: 20px; position: relative; cursor: pointer;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background-size: cover; background-position: center;
+            transition: 0.2s; flex-shrink: 0; border-radius: 4px;
+        }
+        .mp-image-area:hover { filter: brightness(0.95); }
+        .mp-image-area input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 10; }
+        .mp-placeholder { text-align: center; color: #888; pointer-events: none; font-family: 'Pretendard', sans-serif !important; }
+        .mp-info { width: 100%; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+        .mp-name-kor {
+            font-size: 36px; font-weight: 500; color: var(--mp-text-color);
+            text-align: center; margin-bottom: 10px; width: 100%; max-width: 280px;
+            white-space: nowrap; overflow: hidden; height: 45px; line-height: 45px; flex-shrink: 0;
+        }
+        .mp-palette { display: flex; gap: 15px; justify-content: center; margin-bottom: 10px; flex-shrink: 0; }
+        .mp-color-dot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .mp-dot { width: 30px; height: 30px; border-radius: 50%; background: #ffffff; position: relative; cursor: pointer; border: 1px solid rgba(0,0,0,0.1); }
+        .mp-dot input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .mp-dot-label { font-size: 10px; color: var(--mp-sub-text); text-transform: uppercase; font-weight: bold; font-family: 'Pretendard', sans-serif !important; }
+        .mp-stats {
+            font-size: 18px; color: var(--mp-text-color); text-align: center;
+            margin-bottom: 20px; opacity: 0.8; width: 100%;
+            white-space: nowrap; overflow: hidden; height: 28px; line-height: 28px; flex-shrink: 0;
+        }
+        .mp-desc-box {
+            width: 100%; min-height: 100px; background: var(--mp-card-bg);
+            border-radius: 4px; padding: 15px; font-size: 14px;
+            color: var(--mp-text-color); line-height: 1.6; white-space: pre-wrap;
+            box-shadow: 0 2px 10px var(--shadow-color); border: 1px solid var(--input-border);
+            flex-shrink: 1;
+        }
+        .add-card-btn {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: rgba(255,255,255,0.2); border: 2px dashed #999;
+            color: #ccc; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; transition: 0.2s;
+        }
+        .add-card-btn:hover { background: rgba(255,255,255,0.4); transform: scale(1.1); color: white; border-color: white;}
+        .delete-card-btn {
+            position: absolute; top: -10px; right: -10px;
+            background: #ff4d4d; color: white; width: 24px; height: 24px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; opacity: 0; transition: 0.2s; z-index: 100;
+        }
+        .mp-card:hover .delete-card-btn { opacity: 1; }
+    </style>
 </head>
 <body>
+    
+    <div class="mode-switch-btn hide-on-save" onclick="toggleMultiplayerMode()">
+        <span class="material-icons">people_alt</span>
+        <span id="mode-text">다인용 모드로 전환</span>
+    </div>
+
+    <nav class="sidebar mp-sidebar left-sidebar hide-on-save">
+        <div class="menu-group">
+            <div class="menu-item" data-title="배경 색상">
+                <span class="material-icons">format_paint</span>
+                <input type="color" value="#eef2f5" oninput="changeSheetColor(this.value)">
+            </div>
+            <div class="menu-item" data-title="스티커 추가">
+                <label for="mp-sticker-upload"><span class="material-icons">star</span></label>
+                <input type="file" id="mp-sticker-upload" accept="image/*" onchange="addSticker(event)">
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="menu-group">
+            <div class="menu-item" data-title="다크 모드" onclick="toggleDarkMode()">
+                <span class="material-icons">dark_mode</span>
+            </div>
+            <div class="menu-item reset-btn-style" data-title="초기화" onclick="showResetModal()">
+                <span class="material-icons">refresh</span>
+            </div>
+        </div>
+        <div class="divider"></div>
+        <div class="menu-group">
+            <button onclick="saveImage()" class="save-btn-round" data-title="이미지 저장">
+                <span class="material-icons" style="color:white">save_alt</span>
+            </button>
+        </div>
+    </nav>
+
+    <div id="mp-wrapper" class="hide-on-save">
+        <div id="multiplayer-container">
+            <div id="mp-sticker-layer" class="mp-sticker-layer"></div>
+        </div>
+        <div class="add-card-btn hide-on-save" onclick="addCard()" title="인원 추가 (최대 5명)">
+            <span class="material-icons" style="font-size: 32px;">add</span>
+        </div>
+    </div>
+
     <div class="top-notice hide-on-save">
         <p>모든 텍스트 칸은 수정 가능합니다. (ex.외적특징, #해시태그 같은 부분)</p>
         <p>더미텍스트로 적혀있는 부분은 수정하지 않으시면 저장시 출력되지 않습니다.</p>
         <p>저장기능으로 출력시 반투명 미러효과 적용 안됩니다.. UI 끄기 기능 누르고 셀프캡처 하세요!</p>
-        
     </div>
-    
+
     <div class="top-right-controls hide-on-save">
         <div class="round-btn" onclick="openSlotModal('save')" data-title="임시 저장">
             <span class="material-icons">save</span>
@@ -48,7 +551,7 @@
         <div class="menu-group">
             <div class="menu-item" data-title="전체 배경 색상"><span class="material-icons">format_paint</span><input type="color" value="#eef2f5" oninput="changeSheetColor(this.value)"></div>
             <div class="menu-item" data-title="배경 사진 넣기"><label for="bg-file-upload"><span class="material-icons">image</span></label><input type="file" id="bg-file-upload" accept="image/*" onchange="loadBackgroundImage(event)"></div>
-             <div class="menu-item" data-title="스티커 추가"><label for="sticker-upload"><span class="material-icons">star</span></label><input type="file" id="sticker-upload" accept="image/*" onchange="addSticker(event)"></div>
+            <div class="menu-item" data-title="스티커 추가"><label for="sticker-upload"><span class="material-icons">star</span></label><input type="file" id="sticker-upload" accept="image/*" onchange="addSticker(event)"></div>
         </div>
         <div class="divider"></div>
         <div class="menu-group">
@@ -61,7 +564,7 @@
         </div>
         <div class="divider"></div>
         <div class="menu-group">
-             <div class="menu-item" data-title="다크 모드" onclick="toggleDarkMode()"><span class="material-icons">dark_mode</span></div>
+            <div class="menu-item" data-title="다크 모드" onclick="toggleDarkMode()"><span class="material-icons">dark_mode</span></div>
             <button onclick="saveImage()" class="save-btn-round" data-title="이미지 저장"><span class="material-icons" style="color:white">save_alt</span></button>
         </div>
     </nav>
@@ -81,7 +584,7 @@
             <div class="menu-item" data-title="P2 플레이어 글씨"><span class="material-icons">title</span><input type="color" value="#ffffff" oninput="changeMusicText(this.value, 'p2-music')"></div>
         </div>
     </nav>
-    
+
     <div id="reset-modal" class="modal hide-on-save" onclick="closeModalOnClickOutside(event, 'reset-modal')">
         <div class="modal-content"><h3>초기화 하시겠습니까?</h3><p>모든 내용이 사라집니다.</p><div class="modal-btns"><button onclick="resetPage()">초기화</button><button onclick="closeResetModal()" style="background:#ddd; color:#333">취소</button></div></div>
     </div>
@@ -123,7 +626,7 @@
         <div id="sticker-layer"></div>
         <div class="copyright-fixed auto-shrink" contenteditable="true" spellcheck="false" data-default="ⓒ 이미지 출처" oninput="autoFitText(this)">ⓒ 이미지 출처</div>
         <div class="other-info-fixed auto-shrink" contenteditable="true" spellcheck="false" data-default="색상 보정에 크게 신경쓰지 않습니다." oninput="autoFitText(this)">색상 보정에 크게 신경쓰지 않습니다.</div>
-        
+
         <div id="pair-name-wrapper" style="display:none;">
             <div id="pair-sub-label-box" class="pair-sub-label" style="display:none;"><span class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">Sub Text</span><div class="pair-sub-color"><input type="color" oninput="changeSubTextColor(this.value)"></div></div>
             <div id="pair-name-container" class="pair-name font-style-1 auto-shrink" contenteditable="true" spellcheck="false" data-default="Pair Name" oninput="autoFitText(this)">Pair Name</div>
@@ -154,7 +657,7 @@
                         </div>
                         <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
-                    
+
                     <div class="sub-row">
                         <div class="sub-img" id="p1-sub2">
                             <span class="plus no-select">+</span>
@@ -164,7 +667,7 @@
                         </div>
                         <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
-                    
+
                     <div class="sub-row">
                         <div class="sub-img" id="p1-sub3">
                             <span class="plus no-select">+</span>
@@ -203,7 +706,7 @@
             <div class="info-frame">
                 <div class="bubble-row">
                     <div class="bubble" id="p2-bubble"><span class="auto-shrink" contenteditable="true" spellcheck="false" data-default="한마디를 입력하세요." oninput="autoFitText(this)">한마디를 입력하세요.</span><div class="inner-palette-btn hide-on-save" onclick="toggleColorMenu('p2-bubble-menu', event)"><span class="material-icons">palette</span></div></div>
-                     <div class="color-pickers dropdown" id="p2-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div></div>
+                    <div class="color-pickers dropdown" id="p2-bubble-menu"><div class="cp-item"><span>배경</span><input type="color" value="#ffffff" oninput="changeBoxBg(this.value, 'p2-bubble')"></div><div class="cp-item"><span>글씨</span><input type="color" value="#333333" oninput="changeBoxText(this.value, 'p2-bubble')"></div></div>
                 </div>
                 <div class="sub-list">
                     <div class="sub-row">
@@ -215,7 +718,7 @@
                         </div>
                         <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">외적특징</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#설명</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
-                    
+
                     <div class="sub-row">
                         <div class="sub-img" id="p2-sub2">
                             <span class="plus no-select">+</span>
@@ -225,7 +728,7 @@
                         </div>
                         <div class="sub-text-group"><div class="sub-header-row"><strong class="auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">표정참고</strong><span class="hash auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">#이모티콘</span></div><div class="sub-description auto-shrink" contenteditable="true" spellcheck="false" oninput="autoFitText(this)">설명 입력</div></div>
                     </div>
-                    
+
                     <div class="sub-row">
                         <div class="sub-img" id="p2-sub3">
                             <span class="plus no-select">+</span>
@@ -252,7 +755,569 @@
             </div>
         </div>
     </div>
-    <script src="script.js"></script>
+    
+    <script>
+        let isMultiplayer = false;
+        let cardCount = 0;
+        const maxCards = 5;
+
+        function toggleMultiplayerMode() {
+            isMultiplayer = !isMultiplayer;
+            const sheet = document.getElementById('sheet-container');
+            const mpWrapper = document.getElementById('mp-wrapper');
+            const btnText = document.querySelector('#mode-text');
+            const body = document.body;
+
+            if (isMultiplayer) {
+                sheet.style.display = 'none';
+                mpWrapper.classList.add('active');
+                body.classList.add('multiplayer-active');
+                btnText.textContent = '기본 모드로 전환';
+                
+                if(document.getElementById('multiplayer-container').children.length <= 1) { 
+                    if(document.querySelectorAll('.mp-card').length === 0) addCard();
+                }
+            } else {
+                sheet.style.display = 'flex';
+                mpWrapper.classList.remove('active');
+                body.classList.remove('multiplayer-active');
+                btnText.textContent = '다인용 모드로 전환';
+            }
+        }
+
+        function triggerUpload(id) { document.getElementById(id).click(); }
+        function loadImage(event, id) {
+            const container = document.getElementById(id);
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    container.style.backgroundImage = 'url(' + e.target.result + ')';
+                    const ph = container.querySelector('.placeholder-text, .plus, .placeholder');
+                    const em = container.querySelector('.emoji-display');
+                    if(ph) ph.style.display = 'none';
+                    if(em) em.textContent = '';
+                    if(id.includes('profile-bg')) container.style.backgroundColor = 'transparent';
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+        function loadBackgroundImage(event) {
+            const sheet = document.getElementById('sheet-container');
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { sheet.style.backgroundImage = 'url(' + e.target.result + ')'; }
+                reader.readAsDataURL(file);
+            }
+        }
+        function changeSheetColor(color) {
+            document.getElementById('sheet-container').style.backgroundColor = color;
+            document.getElementById('sheet-container').style.backgroundImage = 'none';
+            document.getElementById('multiplayer-container').style.backgroundColor = color;
+            document.getElementById('multiplayer-container').style.backgroundImage = 'none';
+        }
+        function changeBorderColor(color, frameId) {
+            document.getElementById(frameId).style.borderColor = color;
+        }
+        function setMode(mode) {
+            const sheet = document.getElementById('sheet-container');
+            const p2Set = document.getElementById('p2-set');
+            const p2Sidebar = document.getElementById('p2-sidebar');
+            if (mode === 1) {
+                sheet.classList.remove('mode-2'); sheet.classList.add('mode-1');
+                p2Set.style.opacity = '0'; p2Set.style.width = '0';
+                p2Sidebar.style.display = 'none';
+                document.getElementById('pair-name-wrapper').style.display = 'none';
+            } else {
+                sheet.classList.remove('mode-1'); sheet.classList.add('mode-2');
+                p2Set.style.display = 'flex';
+                setTimeout(() => { p2Set.style.opacity = '1'; p2Set.style.width = '640px'; }, 10);
+                p2Sidebar.style.display = 'flex';
+                document.getElementById('pair-name-wrapper').style.display = 'flex';
+            }
+        }
+
+        let isManualColor = { pair: false, p1Text: false, p2Text: false, p1Border: false, p2Border: false };
+        let isColorLinked = false;
+        function toggleColorLink(btn) { isColorLinked = !isColorLinked; btn.classList.toggle('active-link'); }
+
+        function toggleDarkMode() { 
+            document.body.classList.toggle('dark-mode'); 
+            const isDark = document.body.classList.contains('dark-mode');
+            const themeInputs = ['p1-gs', 'p1-ge', 'p2-gs', 'p2-ge'];
+            themeInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(!el) return;
+                if (isDark && el.value === '#333333') { el.value = '#e0e0e0'; } 
+                else if (!isDark && el.value === '#e0e0e0') { el.value = '#333333'; }
+                if(id.includes('p1')) updateGradient('p1-gs', 'p1-ge', 'p1-grad-bar');
+                if(id.includes('p2')) updateGradient('p2-gs', 'p2-ge', 'p2-grad-bar');
+            });
+            const defaultLight = '#333333'; const defaultDark = '#eeeeee';
+            if (!isManualColor.pair) { document.documentElement.style.setProperty('--pair-name-color', isDark ? defaultDark : defaultLight); }
+            if (!isManualColor.p1Text) { document.documentElement.style.setProperty('--p1-text', isDark ? defaultDark : defaultLight); }
+            if (!isManualColor.p2Text) { document.documentElement.style.setProperty('--p2-text', isDark ? defaultDark : defaultLight); }
+        }
+
+        function toggleMusicPlayer() { document.querySelectorAll('.music-box').forEach(p => { p.style.display = (p.style.display === 'none') ? 'flex' : 'none'; }); }
+        function toggleLike(btn) { btn.classList.toggle('active'); btn.textContent = btn.classList.contains('active') ? 'favorite' : 'favorite_border'; }
+        function toggleColorMenu(id, event) { 
+            event.stopPropagation();
+            document.querySelectorAll('.color-pickers').forEach(el => { if(el.id !== id) el.classList.remove('show'); });
+            document.getElementById(id).classList.toggle('show'); 
+        }
+
+        function autoFitText(element) {
+            let fontSize = parseFloat(window.getComputedStyle(element).fontSize);
+            if (!element.dataset.originalSize) { element.dataset.originalSize = fontSize; }
+            const maxFontSize = parseFloat(element.dataset.originalSize);
+            const minFontSize = 8;
+            element.style.fontSize = maxFontSize + 'px';
+            fontSize = maxFontSize;
+            while ( (element.scrollWidth > element.clientWidth || element.scrollHeight > element.clientHeight) && fontSize > minFontSize ) {
+                fontSize -= 0.5;
+                element.style.fontSize = fontSize + 'px';
+            }
+        }
+
+        let currentCropTargetId = null;
+        let cropperImage = new Image();
+        let cropperCanvas = null;
+        let cropperCtx = null;
+        let currentScale = 1;
+        let currentRotation = 0;
+        let imgPosX = 0, imgPosY = 0;
+        let isDragging = false;
+        let startX, startY;
+
+        function openCropper(event, targetId) {
+            const file = event.target.files[0];
+            if(!file) return;
+            currentCropTargetId = targetId;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                cropperImage.src = e.target.result;
+                cropperImage.onload = function() {
+                    document.getElementById('cropper-modal').classList.add('show');
+                    initCanvas(targetId);
+                }
+            }
+            reader.readAsDataURL(file);
+            event.target.value = ''; 
+        }
+        function initCanvas(targetId) {
+            cropperCanvas = document.getElementById('cropper-canvas');
+            cropperCtx = cropperCanvas.getContext('2d');
+            const targetEl = document.getElementById(targetId);
+            const rect = targetEl.getBoundingClientRect();
+            const ratio = rect.width / rect.height;
+            const baseWidth = 600;
+            cropperCanvas.width = baseWidth;
+            cropperCanvas.height = baseWidth / ratio;
+            currentScale = 1; currentRotation = 0;
+            imgPosX = cropperCanvas.width / 2; imgPosY = cropperCanvas.height / 2;
+            document.getElementById('crop-zoom').value = 1;
+            drawCanvas();
+            const container = document.querySelector('.canvas-container');
+            container.onmousedown = startDrag; container.onmousemove = drag; container.onmouseup = endDrag; container.onmouseleave = endDrag;
+            container.ontouchstart = (e) => { const touch = e.touches[0]; startDrag({ clientX: touch.clientX, clientY: touch.clientY }); };
+            container.ontouchmove = (e) => { if(!isDragging) return; e.preventDefault(); const touch = e.touches[0]; drag({ clientX: touch.clientX, clientY: touch.clientY }); };
+            container.ontouchend = endDrag;
+        }
+        function drawCanvas() {
+            if(!cropperCtx) return;
+            cropperCtx.clearRect(0,0, cropperCanvas.width, cropperCanvas.height);
+            cropperCtx.fillStyle = '#ffffff'; 
+            cropperCtx.fillRect(0, 0, cropperCanvas.width, cropperCanvas.height);
+            cropperCtx.save();
+            cropperCtx.translate(imgPosX, imgPosY);
+            cropperCtx.rotate(currentRotation * Math.PI / 180);
+            cropperCtx.scale(currentScale, currentScale);
+            cropperCtx.drawImage(cropperImage, -cropperImage.width/2, -cropperImage.height/2);
+            cropperCtx.restore();
+        }
+        function startDrag(e) { isDragging = true; startX = e.clientX; startY = e.clientY; }
+        function drag(e) {
+            if(!isDragging) return;
+            const dx = e.clientX - startX; const dy = e.clientY - startY;
+            const canvasEl = document.getElementById('cropper-canvas');
+            const scaleFactor = cropperCanvas.width / canvasEl.clientWidth;
+            imgPosX += dx * scaleFactor; imgPosY += dy * scaleFactor;
+            startX = e.clientX; startY = e.clientY;
+            drawCanvas();
+        }
+        function endDrag() { isDragging = false; }
+        document.getElementById('crop-zoom').addEventListener('input', function(e) {
+            currentScale = parseFloat(e.target.value); drawCanvas();
+        });
+        function rotateImage(deg) {
+            currentRotation = (currentRotation + deg) % 360; drawCanvas();
+        }
+        function applyCrop() {
+            if(!currentCropTargetId) return;
+            const container = document.getElementById(currentCropTargetId);
+            const dataUrl = cropperCanvas.toDataURL('image/png');
+            container.style.backgroundImage = 'url(' + dataUrl + ')';
+            
+            if (currentCropTargetId.startsWith('mp-img-')) {
+                const ph = container.querySelector('.mp-placeholder');
+                if(ph) ph.style.display = 'none';
+            } else {
+                const ph = container.querySelector('.placeholder-text, .plus, .placeholder');
+                const em = container.querySelector('.emoji-display');
+                if(ph) ph.style.display = 'none';
+                if(em) em.textContent = '';
+                if(currentCropTargetId.includes('profile-bg')) container.style.backgroundColor = 'transparent';
+            }
+            closeCropper();
+        }
+        function closeCropper() {
+            document.getElementById('cropper-modal').classList.remove('show');
+            currentCropTargetId = null;
+        }
+
+        let fontIndex = 0; const fonts = ['font-style-1', 'font-style-2', 'font-style-3'];
+        function cyclePairFont() {
+            const nameBox = document.getElementById('pair-name-container');
+            nameBox.classList.remove(fonts[fontIndex]);
+            fontIndex = (fontIndex + 1) % fonts.length;
+            nameBox.classList.add(fonts[fontIndex]);
+        }
+        function changePairColor(color) { document.documentElement.style.setProperty('--pair-name-color', color); isManualColor.pair = true; }
+        function changePairSize(delta) { 
+            const el = document.getElementById('pair-name-container'); 
+            let size = parseInt(window.getComputedStyle(el).fontSize); 
+            el.style.fontSize = (size + delta) + 'px'; 
+            el.dataset.originalSize = size + delta; 
+        }
+        function changePairPos(delta) { 
+            const el = document.getElementById('pair-name-wrapper'); 
+            let top = parseInt(window.getComputedStyle(el).top); 
+            el.style.top = (top + delta) + 'px'; 
+        }
+        function changeSubTextColor(color) { document.documentElement.style.setProperty('--sub-text-color', color); }
+        function togglePairSubLabel() { const el = document.getElementById('pair-sub-label-box'); el.style.display = (el.style.display === 'none') ? 'flex' : 'none'; }
+        function changeP1TextColor(color) { 
+            document.documentElement.style.setProperty('--p1-text', color); 
+            isManualColor.p1Text = true; 
+            if(isColorLinked) { document.documentElement.style.setProperty('--p2-text', color); isManualColor.p2Text = true; }
+        }
+        function changeP2TextColor(color) { document.documentElement.style.setProperty('--p2-text', color); isManualColor.p2Text = true; }
+        function changeP1BorderColor(color) {
+            changeBorderColor(color, 'p1-frame');
+            isManualColor.p1Border = true;
+            if(isColorLinked) { changeBorderColor(color, 'p2-frame'); isManualColor.p2Border = true; }
+        }
+        function changeMusicBg(color, playerId) { 
+            const player = document.getElementById(playerId); 
+            let r=0, g=0, b=0; 
+            if (color.length == 7) { r = parseInt(color.substr(1,2), 16); g = parseInt(color.substr(3,2), 16); b = parseInt(color.substr(5,2), 16); }
+            let opacity = player.dataset.opacity || 0.4; 
+            player.style.background = 'rgba(' + r + ',' + g + ',' + b + ',' + opacity + ')';
+            if(isColorLinked && playerId === 'p1-music') { changeMusicBg(color, 'p2-music'); }
+        }
+        function changeMusicText(color, playerId) { 
+            document.getElementById(playerId).style.color = color; 
+            if(isColorLinked && playerId === 'p1-music') { changeMusicText(color, 'p2-music'); }
+        }
+        function changeBoxBg(color, boxId) {
+            const box = document.getElementById(boxId); box.style.backgroundColor = color;
+            if(boxId.includes('bubble')) {
+                let styleId = 'style-' + boxId; let style = document.getElementById(styleId); 
+                if (!style) { style = document.createElement('style'); style.id = styleId; document.head.appendChild(style); }
+                const isP1InMode2 = document.getElementById('sheet-container').classList.contains('mode-2') && boxId === 'p1-bubble';
+                let tailCss = isP1InMode2 ? '#' + boxId + '::after { border-color: ' + color + ' transparent transparent transparent !important; }' : '#' + boxId + '::after { border-color: transparent ' + color + ' transparent transparent !important; }';
+                style.innerHTML = tailCss;
+            }
+            if(isColorLinked && boxId === 'p1-bubble') changeBoxBg(color, 'p2-bubble');
+        }
+        function changeBoxText(color, boxId) { 
+            document.getElementById(boxId).style.color = color; 
+            if(isColorLinked && boxId === 'p1-bubble') changeBoxText(color, 'p2-bubble');
+        }
+        function changeColor(input) { 
+            const target = input.parentElement.classList.contains('profile-color-trigger') ? input.parentElement.parentElement : input.parentElement; 
+            target.style.backgroundColor = input.value; 
+            if(target.id && target.id.includes('profile-bg')) target.style.backgroundImage = 'none'; 
+        }
+        function triggerColor(id) { document.getElementById(id).click(); }
+        function updateGradient(startId, endId, barId) { 
+            const start = document.getElementById(startId).value; 
+            const end = document.getElementById(endId).value; 
+            document.getElementById(barId).style.background = 'linear-gradient(to right, ' + start + ', ' + end + ')'; 
+        }
+        function addSticker(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const layerId = isMultiplayer ? 'mp-sticker-layer' : 'sticker-layer';
+                    const layer = document.getElementById(layerId); 
+                    const sticker = document.createElement('div'); sticker.className = 'sticker selected'; 
+                    sticker.style.top = '100px'; sticker.style.left = '100px';
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = function() {
+                        const ratio = img.width / img.height; 
+                        sticker.style.width = '100px'; sticker.style.height = (100 / ratio) + 'px';
+                        img.setAttribute('draggable', 'false');
+                        img.ondragstart = () => false;
+                        sticker.innerHTML = '<img src="' + e.target.result + '"><div class="control-btn delete-btn material-icons">close</div><div class="control-btn rotate-handle material-icons">refresh</div><div class="control-btn resize-handle material-icons">open_in_full</div>';
+                        sticker.querySelector('.delete-btn').onclick = (ev) => { ev.stopPropagation(); sticker.remove(); };
+                        sticker.onmousedown = (ev) => { 
+                            if(ev.target.className.includes('control-btn')) return; 
+                            document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); sticker.classList.add('selected'); 
+                            let shiftX = ev.clientX - sticker.getBoundingClientRect().left; let shiftY = ev.clientY - sticker.getBoundingClientRect().top; 
+                            const moveAt = (pageX, pageY) => { sticker.style.left = (pageX - shiftX - layer.getBoundingClientRect().left) + 'px'; sticker.style.top = (pageY - shiftY - layer.getBoundingClientRect().top) + 'px'; }; 
+                            const onMouseMove = (e) => moveAt(e.pageX, e.pageY); 
+                            document.addEventListener('mousemove', onMouseMove); 
+                            sticker.onmouseup = () => { document.removeEventListener('mousemove', onMouseMove); sticker.onmouseup = null; }; 
+                        };
+                        sticker.querySelector('.rotate-handle').onmousedown = (e) => { e.stopPropagation(); e.preventDefault(); const rect = sticker.getBoundingClientRect(); const centerX = rect.left + rect.width/2; const centerY = rect.top + rect.height/2; const rotate = (ev) => { const angle = Math.atan2(ev.clientY - centerY, ev.clientX - centerX) * 180 / Math.PI; sticker.style.transform = 'rotate(' + (angle + 90) + 'deg)'; }; const stopRotate = () => { document.removeEventListener('mousemove', rotate); document.removeEventListener('mouseup', stopRotate); }; document.addEventListener('mousemove', rotate); document.addEventListener('mouseup', stopRotate); };
+                        sticker.querySelector('.resize-handle').onmousedown = (e) => { e.stopPropagation(); e.preventDefault(); const startX = e.clientX; const startW = parseInt(getComputedStyle(sticker).width); const doDrag = (ev) => { let newW = startW + (ev.clientX - startX); if(newW < 30) newW = 30; sticker.style.width = newW + 'px'; sticker.style.height = (newW / ratio) + 'px'; }; const stopDrag = () => { document.removeEventListener('mousemove', doDrag); document.removeEventListener('mouseup', stopDrag); }; document.addEventListener('mousemove', doDrag); document.addEventListener('mouseup', stopDrag); };
+                        layer.appendChild(sticker);
+                    }
+                }
+                reader.readAsDataURL(file);
+                event.target.value = ''; 
+            }
+        }
+        document.addEventListener('mousedown', function(e){ if(!e.target.closest('.sticker')) document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); if (!e.target.closest('.color-pickers') && !e.target.closest('.inner-palette-btn') && !e.target.closest('.menu-item') && !e.target.closest('.round-btn')) { document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show')); } });
+        function showResetModal() { document.getElementById('reset-modal').classList.add('show'); }
+        function closeResetModal() { document.getElementById('reset-modal').classList.remove('show'); }
+        function resetPage() {
+            try {
+                sessionStorage.clear(); 
+                const keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    const key = localStorage.key(i);
+                    if (!key.startsWith('sheetData_')) { keysToRemove.push(key); }
+                }
+                keysToRemove.forEach(key => { localStorage.removeItem(key); });
+            } catch(e) {} 
+            location.reload(); 
+        }
+        function saveImage() {
+            const body = document.body;
+            const targetId = isMultiplayer ? 'multiplayer-container' : 'sheet-container';
+            const element = document.getElementById(targetId);
+            document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show'));
+            document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected'));
+            const editables = document.querySelectorAll('[contenteditable]');
+            try { editables.forEach(el => { if(!el.getAttribute('data-default')) return; const current = el.innerText.replace(/\s/g, ''); const def = el.getAttribute('data-default').replace(/\s/g, ''); if(current === def || current === '') { el.dataset.originalColor = el.style.color; el.style.color = 'rgba(0,0,0,0)'; } }); } catch (e) {}
+            body.classList.add('capturing'); window.scrollTo(0,0); 
+            html2canvas(element, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: null }).then(canvas => {
+                try { const link = document.createElement("a"); const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19); link.download = 'character_sheet_' + timestamp + '.png'; link.href = canvas.toDataURL("image/png"); document.body.appendChild(link); link.click(); document.body.removeChild(link); } catch (err) { alert("저장 오류 (SecurityError)"); }
+                body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = el.dataset.originalColor || ''; });
+            }).catch(err => { body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = ''; }); alert('저장 실패: ' + err); });
+        }
+        function toggleMinimalMode() {
+            const sheet = document.getElementById('sheet-container');
+            const btn = document.getElementById('btn-minimal');
+            sheet.classList.toggle('minimal-mode');
+            if (sheet.classList.contains('minimal-mode')) {
+                btn.classList.add('active-link');
+                btn.querySelector('.material-icons').textContent = 'crop_square';
+            } else {
+                btn.classList.remove('active-link');
+                btn.querySelector('.material-icons').textContent = 'crop_portrait';
+            }
+        }
+        let currentEmojiTargetId = null;
+        function openEmojiPicker(event, targetDisplayId) {
+            event.stopPropagation();
+            currentEmojiTargetId = targetDisplayId;
+            document.getElementById('emoji-modal').classList.add('show');
+        }
+        function closeEmojiModal(event) { if (event.target.id === 'emoji-modal') { document.getElementById('emoji-modal').classList.remove('show'); } }
+        document.addEventListener('DOMContentLoaded', () => {
+            const picker = document.querySelector('emoji-picker');
+            if(picker) {
+                picker.addEventListener('emoji-click', event => {
+                    if(currentEmojiTargetId) {
+                        const display = document.getElementById(currentEmojiTargetId);
+                        if(display) {
+                            display.textContent = event.detail.unicode;
+                            const container = display.parentElement;
+                            container.style.backgroundImage = 'none';
+                            const ph = container.querySelector('.plus');
+                            if(ph) ph.style.display = 'none';
+                        }
+                    }
+                    document.getElementById('emoji-modal').classList.remove('show');
+                });
+            }
+            updateSlotInfo();
+        });
+        function toggleUI() {
+            document.body.classList.toggle('ui-hidden');
+            const icon = document.getElementById('ui-icon');
+            if (document.body.classList.contains('ui-hidden')) { icon.textContent = 'visibility_off'; } else { icon.textContent = 'visibility'; }
+        }
+        function closeModalOnClickOutside(event, modalId) { if (event.target.id === modalId) { document.getElementById(modalId).classList.remove('show'); } }
+        document.addEventListener('keydown', function(e) { if (e.target.isContentEditable && e.key === 'Enter') { e.preventDefault(); document.execCommand('insertLineBreak'); } });
+        let currentMode = 'save';
+        function openSlotModal(mode) {
+            currentMode = mode;
+            document.getElementById('slot-modal-title').textContent = mode === 'save' ? '저장할 슬롯 선택' : '불러올 슬롯 선택';
+            updateSlotInfo();
+            document.getElementById('slot-modal').classList.add('show');
+        }
+        function closeSlotModal() { document.getElementById('slot-modal').classList.remove('show'); }
+        function showToastModal(message) {
+            document.getElementById('toast-message').textContent = message;
+            document.getElementById('toast-modal').classList.add('show');
+            setTimeout(closeToastModal, 1500); 
+        }
+        function closeToastModal() { document.getElementById('toast-modal').classList.remove('show'); }
+        function updateSlotInfo() {
+            for (let i = 1; i <= 3; i++) {
+                const data = localStorage.getItem('sheetData_' + i);
+                const infoSpan = document.getElementById('slot-info-' + i);
+                if (data) { const parsed = JSON.parse(data); infoSpan.textContent = parsed.timestamp || '저장됨'; infoSpan.style.color = '#4CAF50'; } else { infoSpan.textContent = '비어있음'; infoSpan.style.color = '#888'; }
+            }
+        }
+        function processSlot(slotNum) { if (currentMode === 'save') { saveToSlot(slotNum); } else { loadFromSlot(slotNum); } closeSlotModal(); }
+        function clearSlot(slotNum, event) {
+            event.stopPropagation();
+            if (confirm('Slot ' + slotNum + '을(를) 비우시겠습니까?')) { localStorage.removeItem('sheetData_' + slotNum); updateSlotInfo(); showToastModal('Slot ' + slotNum + '이(가) 비워졌습니다.'); }
+        }
+        function saveToSlot(slotNum) {
+            const data = { timestamp: new Date().toLocaleString(), texts: [], colors: [], bgImages: [], mode: document.getElementById('sheet-container').classList.contains('mode-2') ? 2 : 1, isDark: document.body.classList.contains('dark-mode') };
+            document.querySelectorAll('[contenteditable]').forEach((el, index) => { data.texts.push({ index: index, html: el.innerHTML, id: el.id, className: el.className }); });
+            document.querySelectorAll('input[type=color]').forEach((el, index) => { data.colors.push({ index: index, value: el.value, id: el.id, name: el.name }); });
+            const imgContainers = document.querySelectorAll('.sub-img, .main-pic-area, .album-art, .profile-image-area, #sheet-container'); 
+            imgContainers.forEach((el, index) => {
+                if (el.style.backgroundImage && !el.style.backgroundImage.includes('none')) { data.bgImages.push({ index: index, id: el.id, bg: el.style.backgroundImage }); }
+                const em = el.querySelector('.emoji-display');
+                if(em && em.textContent) { data.bgImages.push({ index: index, id: el.id, emoji: em.textContent }); }
+            });
+            try { localStorage.setItem('sheetData_' + slotNum, JSON.stringify(data)); showToastModal('Slot ' + slotNum + '에 저장되었습니다.'); } catch (e) { alert('저장 용량이 부족합니다. (사진이 너무 큽니다)'); }
+        }
+        function loadFromSlot(slotNum) {
+            const json = localStorage.getItem('sheetData_' + slotNum);
+            if (!json) { alert('해당 슬롯에 저장된 데이터가 없습니다.'); return; }
+            const data = JSON.parse(json);
+            setMode(data.mode);
+            const isDark = document.body.classList.contains('dark-mode');
+            if (data.isDark && !isDark) toggleDarkMode();
+            if (!data.isDark && isDark) toggleDarkMode();
+            const textEls = document.querySelectorAll('[contenteditable]');
+            data.texts.forEach(item => { if(textEls[item.index] && textEls[item.index].id === item.id) { textEls[item.index].innerHTML = item.html; autoFitText(textEls[item.index]); } });
+            const colorInputs = document.querySelectorAll('input[type=color]');
+            data.colors.forEach(item => { if(colorInputs[item.index]) { colorInputs[item.index].value = item.value; colorInputs[item.index].dispatchEvent(new Event('input', { bubbles: true })); } });
+            const imgContainers = document.querySelectorAll('.sub-img, .main-pic-area, .album-art, .profile-image-area, #sheet-container');
+            imgContainers.forEach((el, index) => {
+                el.style.backgroundImage = 'none';
+                const ph = el.querySelector('.placeholder-text, .plus, .placeholder');
+                if(ph) ph.style.display = 'block';
+                const em = el.querySelector('.emoji-display');
+                if(em) em.textContent = '';
+            });
+            data.bgImages.forEach(item => {
+                const containerIndex = Array.from(imgContainers).findIndex(el => el.id === item.id);
+                if(containerIndex !== -1) {
+                    const el = imgContainers[containerIndex];
+                    if(item.bg) { el.style.backgroundImage = item.bg; const ph = el.querySelector('.placeholder-text, .plus, .placeholder'); if(ph) ph.style.display = 'none'; if(el.id.includes('profile-bg')) el.style.backgroundColor = 'transparent'; }
+                    if(item.emoji) { const em = el.querySelector('.emoji-display'); if(em) { em.textContent = item.emoji; el.style.backgroundImage = 'none'; const ph = el.querySelector('.plus'); if(ph) ph.style.display = 'none'; } }
+                }
+            });
+            showToastModal('데이터를 불러왔습니다.');
+        }
+        function autoShrinkText(element) {
+            if (!element.dataset.originalSize) {
+                let style = window.getComputedStyle(element, null).getPropertyValue('font-size');
+                element.dataset.originalSize = parseFloat(style); 
+            }
+            const maxFontSize = parseFloat(element.dataset.originalSize);
+            const minFontSize = 8; 
+            let currentFontSize = maxFontSize;
+            element.style.fontSize = maxFontSize + 'px';
+            while (element.scrollWidth > element.clientWidth && currentFontSize > minFontSize) {
+                currentFontSize -= 1;
+                element.style.fontSize = currentFontSize + 'px';
+            }
+        }
+        function addCard() {
+            if (cardCount >= maxCards) return;
+            cardCount++;
+            const container = document.getElementById('multiplayer-container');
+            const cardId = 'mp-card-' + Date.now();
+            const imgId = 'mp-img-' + cardId;
+            const card = document.createElement('div');
+            card.className = 'mp-card';
+            card.id = cardId;
+            card.innerHTML = `
+                <div class="delete-card-btn hide-on-save" onclick="removeCard('${cardId}')">
+                    <span class="material-icons" style="font-size: 16px;">close</span>
+                </div>
+                <div class="mp-header">
+                    <div class="mp-number-badge" style="background-color: #ddd;">
+                        <span class="mp-number-text">${cardCount}</span>
+                        <input type="color" oninput="changeMpBadgeColor(this)" class="hide-on-save">
+                    </div>
+                    <div class="mp-titles">
+                        <div class="mp-title-main" contenteditable="true" spellcheck="false" oninput="autoShrinkText(this)">한자/한글</div>
+                        <div class="mp-title-sub" contenteditable="true" spellcheck="false">NAME</div>
+                    </div>
+                </div>
+                <div class="mp-image-area" id="${imgId}" onclick="triggerMpUpload(this)">
+                    <div class="mp-placeholder">
+                        <span class="material-icons" style="font-size: 40px; color:#aaa;">add_a_photo</span><br>
+                        사진 등록
+                    </div>
+                    <input type="file" accept="image/*" onchange="openCropper(event, '${imgId}')">
+                </div>
+                <div class="mp-info">
+                    <div class="mp-name-kor" contenteditable="true" spellcheck="false" oninput="autoShrinkText(this)">한글이름</div>
+                    <div class="mp-palette">
+                        <div class="mp-color-dot">
+                            <div class="mp-dot" style="background-color: #ffffff;">
+                                <input type="color" value="#ffffff" oninput="changeDotColor(this)" class="hide-on-save">
+                            </div>
+                            <span class="mp-dot-label">HAIR</span>
+                        </div>
+                        <div class="mp-color-dot">
+                            <div class="mp-dot" style="background-color: #ffffff;">
+                                <input type="color" value="#ffffff" oninput="changeDotColor(this)" class="hide-on-save">
+                            </div>
+                            <span class="mp-dot-label">EYE(L)</span>
+                        </div>
+                        <div class="mp-color-dot">
+                            <div class="mp-dot" style="background-color: #ffffff;">
+                                <input type="color" value="#ffffff" oninput="changeDotColor(this)" class="hide-on-save">
+                            </div>
+                            <span class="mp-dot-label">EYE(R)</span>
+                        </div>
+                    </div>
+                    <div class="mp-stats" contenteditable="true" spellcheck="false" oninput="autoShrinkText(this)">키cm/나이</div>
+                </div>
+                <div class="mp-desc-box" contenteditable="true" data-placeholder="설명을 입력하세요..."></div>
+            `;
+            container.appendChild(card);
+            renumberCards();
+            updateAddButtonVisibility();
+        }
+        function removeCard(id) {
+            const card = document.getElementById(id);
+            if(card) {
+                card.remove();
+                cardCount--;
+                renumberCards();
+                updateAddButtonVisibility();
+            }
+        }
+        function renumberCards() {
+            const badges = document.querySelectorAll('.mp-number-text');
+            badges.forEach((span, index) => { span.textContent = index + 1; });
+        }
+        function updateAddButtonVisibility() {
+            const addBtn = document.querySelector('.add-card-btn');
+            addBtn.style.display = (cardCount >= maxCards) ? 'none' : 'flex';
+        }
+        function triggerMpUpload(div) { div.querySelector('input').click(); }
+        function changeMpBadgeColor(input) { input.parentElement.style.backgroundColor = input.value; }
+        function changeDotColor(input) { input.parentElement.style.backgroundColor = input.value; }
+    </script>
 </body>
 </html>
-
