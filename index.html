@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>누덕누덕 설정틀</title>
+    <title>누덕누덕 설정틀 (통합 ver)</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/subsets/Paperlogy-dynamic-subset.css" type="text/css"/>
     <link rel="icon" type="image/png" href="ico.png">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Icons+Round" rel="stylesheet">
@@ -386,6 +386,7 @@
             min-height: 800px;
             flex-wrap: nowrap;
             position: relative; 
+            zoom: 0.8;
         }
         .mp-card {
             width: 320px;
@@ -1101,16 +1102,54 @@
         function saveImage() {
             const body = document.body;
             const targetId = isMultiplayer ? 'multiplayer-container' : 'sheet-container';
-            const element = document.getElementById(targetId);
+            const originalElement = document.getElementById(targetId);
+
             document.querySelectorAll('.color-pickers').forEach(el => el.classList.remove('show'));
             document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected'));
+            
             const editables = document.querySelectorAll('[contenteditable]');
             try { editables.forEach(el => { if(!el.getAttribute('data-default')) return; const current = el.innerText.replace(/\s/g, ''); const def = el.getAttribute('data-default').replace(/\s/g, ''); if(current === def || current === '') { el.dataset.originalColor = el.style.color; el.style.color = 'rgba(0,0,0,0)'; } }); } catch (e) {}
+            
             body.classList.add('capturing'); window.scrollTo(0,0); 
-            html2canvas(element, { scale: 2, useCORS: true, allowTaint: false, backgroundColor: null }).then(canvas => {
-                try { const link = document.createElement("a"); const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19); link.download = 'character_sheet_' + timestamp + '.png'; link.href = canvas.toDataURL("image/png"); document.body.appendChild(link); link.click(); document.body.removeChild(link); } catch (err) { alert("저장 오류 (SecurityError)"); }
-                body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = el.dataset.originalColor || ''; });
-            }).catch(err => { body.classList.remove('capturing'); editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = ''; }); alert('저장 실패: ' + err); });
+            
+            const clone = originalElement.cloneNode(true);
+            clone.style.transform = "none";
+            clone.style.position = "absolute";
+            clone.style.top = "0";
+            clone.style.left = "0";
+            clone.style.zIndex = "-9999";
+            clone.style.width = "fit-content"; 
+            clone.style.height = "auto";
+            clone.style.margin = "0";
+            clone.style.overflow = "visible"; 
+            clone.style.zoom = "1"; 
+
+            document.body.appendChild(clone);
+
+            html2canvas(clone, {
+                scale: 2,
+                useCORS: true,
+                allowTaint: true, 
+                backgroundColor: null
+            }).then(canvas => {
+                const link = document.createElement("a");
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+                link.download = 'character_sheet_' + timestamp + '.png';
+                link.href = canvas.toDataURL("image/png");
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                document.body.removeChild(clone);
+                body.classList.remove('capturing');
+                editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = el.dataset.originalColor || ''; });
+            }).catch(err => {
+                console.error(err);
+                alert('저장 실패: ' + err);
+                if(clone.parentNode) document.body.removeChild(clone);
+                body.classList.remove('capturing');
+                editables.forEach(el => { if(el.style.color === 'rgba(0, 0, 0, 0)') el.style.color = ''; }); 
+            });
         }
         function toggleMinimalMode() {
             const sheet = document.getElementById('sheet-container');
@@ -1262,12 +1301,12 @@
                         <div class="mp-title-sub" contenteditable="true" spellcheck="false">NAME</div>
                     </div>
                 </div>
-                <div class="mp-image-area" id="${imgId}" onclick="triggerMpUpload(this)">
+                <div class="mp-image-area" id="${imgId}" onclick="triggerMpUpload(this, event)">
                     <div class="mp-placeholder">
                         <span class="material-icons" style="font-size: 40px; color:#aaa;">add_a_photo</span><br>
                         사진 등록
                     </div>
-                    <input type="file" accept="image/*" onchange="openCropper(event, '${imgId}')">
+                    <input type="file" accept="image/*" onchange="openCropper(event, '${imgId}')" onclick="event.stopPropagation()">
                 </div>
                 <div class="mp-info">
                     <div class="mp-name-kor" contenteditable="true" spellcheck="false" oninput="autoShrinkText(this)">한글이름</div>
@@ -1316,7 +1355,11 @@
             const addBtn = document.querySelector('.add-card-btn');
             addBtn.style.display = (cardCount >= maxCards) ? 'none' : 'flex';
         }
-        function triggerMpUpload(div) { div.querySelector('input').click(); }
+        function triggerMpUpload(div, event) { 
+            if (event.target.tagName !== 'INPUT') {
+                div.querySelector('input').click(); 
+            }
+        }
         function changeMpBadgeColor(input) { input.parentElement.style.backgroundColor = input.value; }
         function changeDotColor(input) { input.parentElement.style.backgroundColor = input.value; }
     </script>
