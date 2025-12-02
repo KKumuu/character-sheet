@@ -363,3 +363,12 @@ body.ui-hidden .ui-toggle-btn:hover {
     transform: scale(1.15);
     background: #0097a7;
 }
+
+
+#talk-modal textarea:focus, 
+#talk-modal input:focus, 
+#talk-modal select:focus {
+    outline: none;
+    border-color: #FEE500 !important;
+    box-shadow: 0 0 0 2px rgba(254, 229, 0, 0.2);
+}

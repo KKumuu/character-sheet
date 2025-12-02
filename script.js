@@ -602,5 +602,320 @@ function loadFromSlot(slotNum) {
     
     showToastModal('데이터를 불러왔습니다.');
 }
+// --- 기존 addSticker 함수를 대체할 공용 함수 생성 ---
+function createStickerFromUrl(imageUrl) {
+    const layerId = (typeof isMultiplayer !== 'undefined' && isMultiplayer) ? 'mp-sticker-layer' : 'sticker-layer';
+    const layer = document.getElementById(layerId);
+    
+    const sticker = document.createElement('div'); 
+    sticker.className = 'sticker selected'; 
+    sticker.style.top = '50px'; 
+    sticker.style.left = '50px';
 
+    const img = new Image(); 
+    img.src = imageUrl;
+    
+    img.onload = function() {
+        // 이미지 비율 계산
+        const ratio = img.width / img.height; 
+        // 말풍선은 가로가 긴 경우가 많으므로 기본 크기를 조금 더 키움 (150px)
+        const baseSize = 150;
+        sticker.style.width = baseSize + 'px'; 
+        sticker.style.height = (baseSize / ratio) + 'px';
+
+        img.setAttribute('draggable', 'false');
+        img.ondragstart = () => false;
+
+        // 기존 스티커 컨트롤(삭제, 회전, 리사이즈) HTML 그대로 적용
+        sticker.innerHTML = '<img src="' + imageUrl + '"><div class="control-btn delete-btn material-icons">close</div><div class="control-btn rotate-handle material-icons">refresh</div><div class="control-btn resize-handle material-icons">open_in_full</div>';
+
+        // --- 이벤트 리스너 연결 (기존 로직 복사) ---
+        sticker.querySelector('.delete-btn').onclick = (ev) => { ev.stopPropagation(); sticker.remove(); };
+        
+        sticker.onmousedown = (ev) => { 
+            if(ev.target.className.includes('control-btn')) return; 
+            document.querySelectorAll('.sticker').forEach(s => s.classList.remove('selected')); 
+            sticker.classList.add('selected'); 
+            
+            let shiftX = ev.clientX - sticker.getBoundingClientRect().left; 
+            let shiftY = ev.clientY - sticker.getBoundingClientRect().top; 
+            
+            const moveAt = (pageX, pageY) => { 
+                sticker.style.left = (pageX - shiftX - layer.getBoundingClientRect().left) + 'px'; 
+                sticker.style.top = (pageY - shiftY - layer.getBoundingClientRect().top) + 'px'; 
+            }; 
+            
+            const onMouseMove = (e) => moveAt(e.pageX, e.pageY); 
+            document.addEventListener('mousemove', onMouseMove); 
+            sticker.onmouseup = () => { 
+                document.removeEventListener('mousemove', onMouseMove); 
+                sticker.onmouseup = null; 
+            }; 
+        };
+
+        // 회전 핸들
+        sticker.querySelector('.rotate-handle').onmousedown = (e) => { 
+            e.stopPropagation(); e.preventDefault(); 
+            const rect = sticker.getBoundingClientRect(); 
+            const centerX = rect.left + rect.width/2; 
+            const centerY = rect.top + rect.height/2; 
+            const rotate = (ev) => { 
+                const angle = Math.atan2(ev.clientY - centerY, ev.clientX - centerX) * 180 / Math.PI; 
+                sticker.style.transform = 'rotate(' + (angle + 90) + 'deg)'; 
+            }; 
+            const stopRotate = () => { 
+                document.removeEventListener('mousemove', rotate); 
+                document.removeEventListener('mouseup', stopRotate); 
+            }; 
+            document.addEventListener('mousemove', rotate); 
+            document.addEventListener('mouseup', stopRotate); 
+        };
+
+        // 리사이즈 핸들
+        sticker.querySelector('.resize-handle').onmousedown = (e) => { 
+            e.stopPropagation(); e.preventDefault(); 
+            const startX = e.clientX; 
+            const startW = parseInt(getComputedStyle(sticker).width); 
+            const doDrag = (ev) => { 
+                let newW = startW + (ev.clientX - startX); 
+                if(newW < 30) newW = 30; 
+                sticker.style.width = newW + 'px'; 
+                sticker.style.height = (newW / ratio) + 'px'; 
+            }; 
+            const stopDrag = () => { 
+                document.removeEventListener('mousemove', doDrag); 
+                document.removeEventListener('mouseup', stopDrag); 
+            }; 
+            document.addEventListener('mousemove', doDrag); 
+            document.addEventListener('mouseup', stopDrag); 
+        };
+
+        layer.appendChild(sticker);
+    }
+}
+
+// 기존 addSticker 함수 수정 (createStickerFromUrl을 사용하도록)
+// 기존 addSticker 함수를 덮어씌웁니다.
+addSticker = function(event) {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            createStickerFromUrl(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        event.target.value = '';
+    }
+}
+
+
+
+function openTalkModal() {
+    document.getElementById('talk-modal').classList.add('show');
+    drawTalk(); 
+}
+
+function closeTalkModal() {
+    document.getElementById('talk-modal').classList.remove('show');
+}
+
+
+function drawTalk() {
+    const canvas = document.getElementById('talk-canvas');
+    if(!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const rawText = document.getElementById('talk-message').value;
+    const startTimeStr = document.getElementById('talk-time').value;
+    const theme = document.getElementById('talk-theme').value;
+
+
+    let myBg = '#FEE500', myText = '#000000';
+    let otherBg = '#FFFFFF', otherText = '#000000';
+    let canvasBg = '#f2f4f6';
+
+    if(theme === 'grey') {
+        myBg = '#ddd'; myText = '#333';
+        canvasBg = '#fff';
+    } else if(theme === 'dark') {
+        myBg = '#FEE500'; myText = '#000';
+        otherBg = '#333'; otherText = '#fff';
+        canvasBg = '#1e1e1e';
+    }
+    
+
+    document.querySelector('.talk-preview-area').style.backgroundColor = canvasBg;
+
+
+    const fontSize = 14;
+    const lineHeight = 20; 
+    const fontFamily = "'Pretendard', sans-serif"; // 기존 폰트 사용
+    ctx.font = `${fontSize}px ${fontFamily}`;
+
+
+    function parseTime(str) {
+        const regex = /(오전|오후)?\s*(\d{1,2}):(\d{2})/;
+        const match = str.match(regex);
+        if (!match) return null;
+        let h = parseInt(match[2]), m = parseInt(match[3]);
+        if (match[1] === '오후' && h !== 12) h += 12;
+        else if (match[1] === '오전' && h === 12) h = 0;
+        return h * 60 + m;
+    }
+    function formatTime(min) {
+        min = (min + 1440) % 1440;
+        let h = Math.floor(min / 60), m = min % 60;
+        let p = '오전';
+        if (h >= 12) { p = '오후'; if(h > 12) h -= 12; }
+        if (h === 0) h = 12;
+        return `${p} ${h}:${m.toString().padStart(2,'0')}`;
+    }
+
+    let curMin = parseTime(startTimeStr);
+    let isTimeValid = (curMin !== null);
+    let lastDir = null;
+
+    const lines = rawText.split('\n');
+    const bubbles = [];
+    const maxW = 220;
+    const bubbleMargin = 10;
+    let totalH = 20;
+    const pX = 12, pY = 8;
+
+    lines.forEach(line => {
+        line = line.trim();
+        if(!line) return;
+        
+        let content = line;
+        let manualTime = null;
+        const pipeIdx = line.lastIndexOf('|');
+        if(pipeIdx !== -1 && pipeIdx < line.length - 1) {
+            content = line.substring(0, pipeIdx).trim();
+            manualTime = line.substring(pipeIdx + 1).trim();
+        }
+
+        let dir = 'left', text = content;
+        const match = content.match(/^"(.*)"$/);
+        if(match) { dir = 'right'; text = match[1]; }
+
+        let displayTime = manualTime || startTimeStr;
+        if(!manualTime && isTimeValid) {
+            if(lastDir !== null && lastDir !== dir) curMin++;
+            displayTime = formatTime(curMin);
+        }
+        lastDir = dir;
+
+
+        const words = text.split('');
+        const textLines = [];
+        let currentLine = '';
+        let maxLineW = 0;
+
+        for (let n = 0; n < words.length; n++) {
+            const testLine = currentLine + words[n];
+            const metrics = ctx.measureText(testLine);
+            if (metrics.width > maxW && currentLine !== '') {
+                textLines.push(currentLine);
+                currentLine = words[n];
+            } else {
+                currentLine = testLine;
+            }
+        }
+        textLines.push(currentLine);
+
+        textLines.forEach(l => {
+            const w = ctx.measureText(l).width;
+            if(w > maxLineW) maxLineW = w;
+        });
+
+        const bW = maxLineW + (pX * 2);
+        const bH = (textLines.length * lineHeight) + (pY * 2);
+
+        bubbles.push({
+            dir, textLines, 
+            bg: dir === 'right' ? myBg : otherBg,
+            color: dir === 'right' ? myText : otherText,
+            w: bW, h: bH, time: displayTime
+        });
+        totalH += bH + bubbleMargin;
+    });
+
+    if(bubbles.length === 0) {
+        canvas.width = 300; canvas.height = 100; return;
+    }
+
+
+    canvas.width = 380;
+    canvas.height = totalH + 10;
+    
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    let curY = 20;
+    const radius = 12;
+
+    bubbles.forEach(b => {
+        const margin = 10;
+        let bX, timeX;
+
+        ctx.font = `11px ${fontFamily}`;
+        const timeW = ctx.measureText(b.time).width;
+
+        if(b.dir === 'right') {
+            bX = canvas.width - margin - b.w;
+            timeX = bX - timeW - 5;
+        } else {
+            bX = margin;
+            timeX = bX + b.w + 5;
+        }
+        const timeY = curY + b.h - 2;
+
+
+        ctx.fillStyle = b.bg;
+        ctx.beginPath();
+        ctx.moveTo(bX + radius, curY);
+        ctx.lineTo(bX + b.w - radius, curY);
+        ctx.quadraticCurveTo(bX + b.w, curY, bX + b.w, curY + radius);
+        ctx.lineTo(bX + b.w, curY + b.h - radius);
+        ctx.quadraticCurveTo(bX + b.w, curY + b.h, bX + b.w - radius, curY + b.h);
+        ctx.lineTo(bX + radius, curY + b.h);
+        ctx.quadraticCurveTo(bX, curY + b.h, bX, curY + b.h - radius);
+        ctx.lineTo(bX, curY + radius);
+        ctx.quadraticCurveTo(bX, curY, bX + radius, curY);
+        ctx.fill();
+        
+        ctx.beginPath();
+        if(b.dir === 'right') {
+            ctx.moveTo(bX + b.w, curY + 10);
+            ctx.lineTo(bX + b.w + 6, curY + 15);
+            ctx.lineTo(bX + b.w, curY + 20);
+        } else {
+            ctx.moveTo(bX, curY + 10);
+            ctx.lineTo(bX - 6, curY + 15);
+            ctx.lineTo(bX, curY + 20);
+        }
+        ctx.fill();
+
+        ctx.fillStyle = b.color;
+        ctx.font = `${fontSize}px ${fontFamily}`;
+        ctx.textBaseline = 'middle';
+        b.textLines.forEach((l, i) => {
+            ctx.fillText(l, bX + pX, curY + pY + (i * lineHeight) + (lineHeight/2));
+        });
+
+        ctx.fillStyle = (theme === 'dark') ? '#999' : '#666';
+        ctx.font = `10px ${fontFamily}`;
+        ctx.fillText(b.time, timeX, timeY);
+
+        curY += b.h + bubbleMargin;
+    });
+}
+
+function addTalkSticker() {
+    const canvas = document.getElementById('talk-canvas');
+    if(canvas) {
+        const dataUrl = canvas.toDataURL('image/png');
+        createStickerFromUrl(dataUrl);
+        closeTalkModal();
+    }
+}
 
