@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>누덕누덕 크리스마스 톡</title>
+    <title>누덕누덕 크리스마스 톡 (Center Aligned)</title>
     <link rel="icon" type="image/png" href="./ico.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
@@ -122,6 +122,7 @@
         }
         .chat-screen::-webkit-scrollbar { width: 0px; }
 
+        /* --- 컨트롤 패널 --- */
         .control-panel {
             width: 450px; background: var(--surface-color); border-radius: 24px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.2);
@@ -172,7 +173,7 @@
         .btn-main {
             width: 100%; padding: 12px; border: none; border-radius: 10px;
             font-size: 14px; font-weight: 700; color: white; cursor: pointer;
-            background: #333; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 5px;
+            background: #333; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 10px;
             transition: 0.2s;
         }
         .btn-main:hover { transform: translateY(-1px); opacity: 0.9; }
@@ -208,11 +209,13 @@
             padding: 9px 12px 6px 12px; 
             border-radius: 16px; max-width: 240px; font-size: 14px; line-height: 1.3; 
             box-shadow: 0 1px 1px rgba(0,0,0,0.05); position: relative; display: block; word-break: break-word;
+            margin-top: 10px; /* [수정] 프로필 센터와 맞추기 위해 말풍선을 조금 내림 */
         }
 
         .gift-card { 
             background: white; width: 220px; border-radius: 12px; overflow: hidden; 
             box-shadow: none; border: 1px solid rgba(0,0,0,0.1); position: relative; 
+            margin-top: 10px; /* [수정] 프로필 센터와 맞추기 위해 선물카드도 조금 내림 */
         }
         .gift-header { padding: 8px 12px; font-size: 11px; font-weight: bold; color: white; background: var(--primary-color); }
         .gift-card.green-theme .gift-header { background: var(--secondary-color); }
@@ -234,7 +237,7 @@
         }
         #giftPreviewImg { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-
+        /* --- 크롭퍼(이미지 편집기) 스타일 --- */
         #cropper-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.9); z-index: 3000;
@@ -242,14 +245,12 @@
         }
         #cropper-modal.show { display: flex; }
 
-
         .canvas-container {
             border: 2px solid #555; background: #000;
             overflow: hidden; touch-action: none;
             display: flex; justify-content: center; align-items: center;
             border-radius: 12px; margin-bottom: 20px;
             cursor: move;
-
             max-width: 90vw;
             max-height: 70vh;
         }
@@ -446,16 +447,15 @@
         let isDragging = false;
         let startX, startY;
         let currentCropType = null; 
-        let targetAspectRatio = 1; // 기본은 정사각형 (1:1)
+        let targetAspectRatio = 1; 
 
-
+        // --- 1. 크롭퍼 열기 함수 ---
         function openCropper(input, type) {
             const file = input.files[0];
             if (!file) return;
             
             currentCropType = type;
             
-
             if (type === 'bg') {
                 targetAspectRatio = 9 / 16; 
             } else if (type === 'gift') {
@@ -476,31 +476,35 @@
             input.value = ''; 
         }
 
-
+        // --- 2. 캔버스 초기화 (화질 개선 적용) ---
         function initCanvas() {
             cropperCanvas = document.getElementById('cropper-canvas');
             cropperCtx = cropperCanvas.getContext('2d');
             const container = document.getElementById('canvasContainer');
             
-
+            // 보여지는 크기 계산
             const maxW = 320; 
             const maxH = 450; 
             
             let finalW = maxW;
             let finalH = maxW / targetAspectRatio;
 
-
             if (finalH > maxH) {
                 finalH = maxH;
                 finalW = finalH * targetAspectRatio;
             }
 
-
+            // [중요] 컨테이너는 화면 크기로 설정
             container.style.width = finalW + 'px';
             container.style.height = finalH + 'px';
-            cropperCanvas.width = finalW;
-            cropperCanvas.height = finalH;
 
+            // [중요] 캔버스는 실제 해상도를 2배로 설정하여 고화질 저장
+            const dpr = 2; 
+            cropperCanvas.width = finalW * dpr;
+            cropperCanvas.height = finalH * dpr;
+            
+            // 컨텍스트 스케일 조정 (좌표 계산은 화면 크기 기준 그대로 사용 가능)
+            cropperCtx.scale(dpr, dpr);
 
             currentScale = 1; 
             currentRotation = 0;
@@ -510,7 +514,7 @@
             
             drawCanvas();
 
-
+            // 이벤트 바인딩
             container.onmousedown = startDrag;
             container.onmousemove = drag;
             container.onmouseup = endDrag;
@@ -531,7 +535,13 @@
 
         function drawCanvas() {
             if(!cropperCtx) return;
-            cropperCtx.clearRect(0,0, cropperCanvas.width, cropperCanvas.height);
+            // 캔버스 클리어 (스케일된 크기 고려)
+            cropperCtx.clearRect(0,0, cropperCanvas.width / 2, cropperCanvas.height / 2); 
+            // 안전하게 전체 지우기
+            cropperCtx.save();
+            cropperCtx.setTransform(1, 0, 0, 1, 0, 0);
+            cropperCtx.clearRect(0, 0, cropperCanvas.width, cropperCanvas.height);
+            cropperCtx.restore();
             
             cropperCtx.save();
             cropperCtx.translate(imgPosX, imgPosY);
@@ -541,7 +551,7 @@
             cropperCtx.restore();
         }
 
-
+        // --- 3. 드래그 및 조작 로직 ---
         function startDrag(e) { isDragging = true; startX = e.clientX; startY = e.clientY; }
         
         function drag(e) {
@@ -567,7 +577,7 @@
             drawCanvas();
         }
 
-
+        // --- 4. 적용(Apply) 및 닫기 ---
         function closeCropper() {
             document.getElementById('cropper-modal').classList.remove('show');
             currentCropType = null;
@@ -604,7 +614,7 @@
             closeCropper();
         }
 
-
+        // --- 기존 채팅앱 로직 ---
         function setRoomName(name) { document.getElementById('roomNameDisplay').innerText = name; }
         function setHeaderColor(color) { document.documentElement.style.setProperty('--header-color', color); }
         function setBubbleColorA(color) { document.documentElement.style.setProperty('--primary-color', color); }
@@ -689,7 +699,7 @@
         function showModal() { document.getElementById('resultModalOverlay').style.display = 'flex'; }
         function closeModal() { document.getElementById('resultModalOverlay').style.display = 'none'; }
 
-        // GIF 생성 로직
+        // GIF 생성 로직 (배경 투명화 + 고화질 수정 + 핑크색 제거)
         const workerBlob = new Blob([`importScripts('https://cdnjs.cloudflare.com/ajax/libs/gif.js/0.2.0/gif.worker.js');`], { type: 'application/javascript' });
         const workerUrl = URL.createObjectURL(workerBlob);
 
@@ -703,19 +713,28 @@
             document.getElementById('loadingOverlay').style.display = 'flex';
             target.classList.add('capturing-mode');
 
+            // [중요] 캡처 해상도 2배 설정
+            const scale = 2; 
+
+            // [수정] 핑크색 제거를 위해 backgroundColor: null 사용
             const gif = new GIF({
-                workers: 4, quality: 10, width: target.offsetWidth, height: target.offsetHeight,
+                workers: 4, 
+                quality: 10, 
+                width: target.offsetWidth * scale,  
+                height: target.offsetHeight * scale,
                 workerScript: workerUrl, 
-                background: null, 
-                transparent: 0x000000 
+                background: null, // 배경 없음
+                transparent: 0x000000 // 0x000000(투명)으로 처리
             });
 
             const captureFrame = async (delay) => {
                 try {
                     const canvas = await html2canvas(target, {
-                        scale: 1, 
-                        useCORS: true, allowTaint: true, logging: false,
-                        backgroundColor: null 
+                        scale: scale, 
+                        useCORS: true, 
+                        allowTaint: true, 
+                        logging: false,
+                        backgroundColor: null // [수정] 배경을 투명(null)으로 캡처
                     });
                     gif.addFrame(canvas, {copy: true, delay: delay});
                 } catch (e) {
@@ -724,18 +743,24 @@
                 }
             };
 
+            // 초기화: 스크롤 및 표시 설정
             rows.forEach(r => r.style.display = 'none');
             screen.scrollTop = 0; 
 
             try {
+                // 1. 빈 화면 캡처
                 await captureFrame(300); 
+                
+                // 2. 대화 하나씩 등장하며 캡처
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
                     row.style.display = 'flex'; 
-                    screen.scrollTop = screen.scrollHeight; 
-                    await new Promise(r => setTimeout(r, 100)); 
-                    await captureFrame(500); 
+                    screen.scrollTop = screen.scrollHeight; // 자동 스크롤
+                    await new Promise(r => setTimeout(r, 100)); // 렌더링 대기
+                    await captureFrame(600); 
                 }
+                
+                // 3. 마지막 장면 길게 캡처
                 await captureFrame(1000);
 
                 gif.on('finished', function(blob) {
@@ -765,7 +790,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
